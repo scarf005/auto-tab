@@ -697,8 +697,8 @@ var require_codemirror = __commonJS({
         if (ie && ie_version < 9) {
           return false;
         }
-        var div = elt("div");
-        return "draggable" in div || "dragDrop" in div;
+        var div2 = elt("div");
+        return "draggable" in div2 || "dragDrop" in div2;
       }();
       var zwspSupported;
       function zeroWidthElement(measure) {
@@ -858,16 +858,16 @@ var require_codemirror = __commonJS({
         var exts = modeExtensions.hasOwnProperty(mode) ? modeExtensions[mode] : modeExtensions[mode] = {};
         copyObj(properties, exts);
       }
-      function copyState(mode, state) {
-        if (state === true) {
-          return state;
+      function copyState(mode, state2) {
+        if (state2 === true) {
+          return state2;
         }
         if (mode.copyState) {
-          return mode.copyState(state);
+          return mode.copyState(state2);
         }
         var nstate = {};
-        for (var n in state) {
-          var val = state[n];
+        for (var n in state2) {
+          var val = state2[n];
           if (val instanceof Array) {
             val = val.concat([]);
           }
@@ -875,19 +875,19 @@ var require_codemirror = __commonJS({
         }
         return nstate;
       }
-      function innerMode(mode, state) {
+      function innerMode(mode, state2) {
         var info;
         while (mode.innerMode) {
-          info = mode.innerMode(state);
+          info = mode.innerMode(state2);
           if (!info || info.mode == mode) {
             break;
           }
-          state = info.state;
+          state2 = info.state;
           mode = info.mode;
         }
         return info || {
           mode,
-          state
+          state: state2
         };
       }
       function startState(mode, a1, a2) {
@@ -1153,12 +1153,12 @@ var require_codemirror = __commonJS({
         }
         return out;
       }
-      var SavedContext = function(state, lookAhead) {
-        this.state = state;
+      var SavedContext = function(state2, lookAhead) {
+        this.state = state2;
         this.lookAhead = lookAhead;
       };
-      var Context = function(doc2, state, line, lookAhead) {
-        this.state = state;
+      var Context = function(doc2, state2, line, lookAhead) {
+        this.state = state2;
         this.doc = doc2;
         this.line = line;
         this.maxLookAhead = lookAhead || 0;
@@ -1199,8 +1199,8 @@ var require_codemirror = __commonJS({
         }
       };
       Context.prototype.save = function(copy) {
-        var state = copy !== false ? copyState(this.doc.mode, this.state) : this.state;
-        return this.maxLookAhead > 0 ? new SavedContext(state, this.maxLookAhead) : state;
+        var state2 = copy !== false ? copyState(this.doc.mode, this.state) : this.state;
+        return this.maxLookAhead > 0 ? new SavedContext(state2, this.maxLookAhead) : state2;
       };
       function highlightLine(cm, line, context, forceToEnd) {
         var st = [
@@ -1209,7 +1209,7 @@ var require_codemirror = __commonJS({
         runMode(cm, line.text, cm.doc.mode, context, function(end, style) {
           return st.push(end, style);
         }, lineClasses, forceToEnd);
-        var state = context.state;
+        var state2 = context.state;
         var loop = function(o2) {
           context.baseTokens = st;
           var overlay = cm.state.overlays[o2], i2 = 1, at = 0;
@@ -1237,7 +1237,7 @@ var require_codemirror = __commonJS({
               }
             }
           }, lineClasses);
-          context.state = state;
+          context.state = state2;
           context.baseTokens = null;
           context.baseTokenPos = 1;
         };
@@ -1299,36 +1299,36 @@ var require_codemirror = __commonJS({
           stream.start = stream.pos;
         }
       }
-      function callBlankLine(mode, state) {
+      function callBlankLine(mode, state2) {
         if (mode.blankLine) {
-          return mode.blankLine(state);
+          return mode.blankLine(state2);
         }
         if (!mode.innerMode) {
           return;
         }
-        var inner = innerMode(mode, state);
+        var inner = innerMode(mode, state2);
         if (inner.mode.blankLine) {
           return inner.mode.blankLine(inner.state);
         }
       }
-      function readToken(mode, stream, state, inner) {
+      function readToken(mode, stream, state2, inner) {
         for (var i2 = 0; i2 < 10; i2++) {
           if (inner) {
-            inner[0] = innerMode(mode, state).mode;
+            inner[0] = innerMode(mode, state2).mode;
           }
-          var style = mode.token(stream, state);
+          var style = mode.token(stream, state2);
           if (stream.pos > stream.start) {
             return style;
           }
         }
         throw new Error("Mode " + mode.name + " failed to advance stream.");
       }
-      var Token = function(stream, type, state) {
+      var Token = function(stream, type, state2) {
         this.start = stream.start;
         this.end = stream.pos;
         this.string = stream.current();
         this.type = type || null;
-        this.state = state;
+        this.state = state2;
       };
       function takeToken(cm, pos, precise, asArray) {
         var doc2 = cm.doc, mode = doc2.mode, style;
@@ -5383,7 +5383,7 @@ var require_codemirror = __commonJS({
         }
         return copy;
       }
-      function extendRange(range2, head, other, extend) {
+      function extendRange2(range2, head, other, extend) {
         if (extend) {
           var anchor = range2.anchor;
           if (other) {
@@ -5405,14 +5405,14 @@ var require_codemirror = __commonJS({
           extend = doc2.cm && (doc2.cm.display.shift || doc2.extend);
         }
         setSelection(doc2, new Selection([
-          extendRange(doc2.sel.primary(), head, other, extend)
+          extendRange2(doc2.sel.primary(), head, other, extend)
         ], 0), options);
       }
       function extendSelections(doc2, heads, options) {
         var out = [];
         var extend = doc2.cm && (doc2.cm.display.shift || doc2.extend);
         for (var i2 = 0; i2 < doc2.sel.ranges.length; i2++) {
-          out[i2] = extendRange(doc2.sel.ranges[i2], heads[i2], null, extend);
+          out[i2] = extendRange2(doc2.sel.ranges[i2], heads[i2], null, extend);
         }
         var newSel = normalizeSelection(doc2.cm, out, doc2.sel.primIndex);
         setSelection(doc2, newSel, options);
@@ -7006,7 +7006,7 @@ var require_codemirror = __commonJS({
           return copy;
         },
         unlinkDoc: function(other) {
-          if (other instanceof CodeMirror3) {
+          if (other instanceof CodeMirror4) {
             other = other.doc;
           }
           if (this.linked) {
@@ -7084,16 +7084,16 @@ var require_codemirror = __commonJS({
           return;
         }
         if (files && files.length && window.FileReader && window.File) {
-          var n = files.length, text = Array(n), read = 0;
+          var n = files.length, text = Array(n), read2 = 0;
           var markAsReadAndPasteIfAllFilesAreRead = function() {
-            if (++read == n) {
+            if (++read2 == n) {
               operation(cm, function() {
                 pos = clipPos(cm.doc, pos);
                 var change = {
                   from: pos,
                   to: pos,
-                  text: cm.doc.splitLines(text.filter(function(t) {
-                    return t != null;
+                  text: cm.doc.splitLines(text.filter(function(t2) {
+                    return t2 != null;
                   }).join(cm.doc.lineSeparator())),
                   origin: "paste"
                 };
@@ -8067,7 +8067,7 @@ var require_codemirror = __commonJS({
         });
       }
       var lastStoppedKey = null;
-      function onKeyDown(e) {
+      function onKeyDown2(e) {
         var cm = this;
         if (e.target && e.target != cm.display.input.getField()) {
           return;
@@ -8370,7 +8370,7 @@ var require_codemirror = __commonJS({
         } else {
           var range2 = rangeForUnit(cm, start, behavior.unit);
           if (behavior.extend) {
-            ourRange = extendRange(ourRange, range2.anchor, range2.head, behavior.extend);
+            ourRange = extendRange2(ourRange, range2.anchor, range2.head, behavior.extend);
           } else {
             ourRange = range2;
           }
@@ -8598,10 +8598,10 @@ var require_codemirror = __commonJS({
       };
       var defaults = {};
       var optionHandlers = {};
-      function defineOptions(CodeMirror4) {
-        var optionHandlers2 = CodeMirror4.optionHandlers;
+      function defineOptions(CodeMirror5) {
+        var optionHandlers2 = CodeMirror5.optionHandlers;
         function option(name, deflt, handle, notOnInit) {
-          CodeMirror4.defaults[name] = deflt;
+          CodeMirror5.defaults[name] = deflt;
           if (handle) {
             optionHandlers2[name] = notOnInit ? function(cm, val, old) {
               if (old != Init) {
@@ -8610,8 +8610,8 @@ var require_codemirror = __commonJS({
             } : handle;
           }
         }
-        CodeMirror4.defineOption = option;
-        CodeMirror4.Init = Init;
+        CodeMirror5.defineOption = option;
+        CodeMirror5.Init = Init;
         option("value", "", function(cm, val) {
           return cm.setValue(val);
         }, true);
@@ -8796,10 +8796,10 @@ var require_codemirror = __commonJS({
           return updateScrollbars(cm);
         }, 100);
       }
-      function CodeMirror3(place, options) {
+      function CodeMirror4(place, options) {
         var this$1 = this;
-        if (!(this instanceof CodeMirror3)) {
-          return new CodeMirror3(place, options);
+        if (!(this instanceof CodeMirror4)) {
+          return new CodeMirror4(place, options);
         }
         this.options = options = options ? copyObj(options) : {};
         copyObj(defaults, options, false);
@@ -8810,7 +8810,7 @@ var require_codemirror = __commonJS({
           doc2.modeOption = options.mode;
         }
         this.doc = doc2;
-        var input = new CodeMirror3.inputStyles[options.inputStyle](this);
+        var input = new CodeMirror4.inputStyles[options.inputStyle](this);
         var display = this.display = new Display(place, doc2, input, options);
         display.wrapper.CodeMirror = this;
         themeChanged(this);
@@ -8873,8 +8873,8 @@ var require_codemirror = __commonJS({
           display.lineDiv.style.textRendering = "auto";
         }
       }
-      CodeMirror3.defaults = defaults;
-      CodeMirror3.optionHandlers = optionHandlers;
+      CodeMirror4.defaults = defaults;
+      CodeMirror4.optionHandlers = optionHandlers;
       function registerEventHandlers(cm) {
         var d = cm.display;
         on(d.scroller, "mousedown", operation(cm, onMouseDown));
@@ -9011,7 +9011,7 @@ var require_codemirror = __commonJS({
         on(inp, "keyup", function(e) {
           return onKeyUp.call(cm, e);
         });
-        on(inp, "keydown", operation(cm, onKeyDown));
+        on(inp, "keydown", operation(cm, onKeyDown2));
         on(inp, "keypress", operation(cm, onKeyPress));
         on(inp, "focus", function(e) {
           return onFocus(cm, e);
@@ -9021,11 +9021,11 @@ var require_codemirror = __commonJS({
         });
       }
       var initHooks = [];
-      CodeMirror3.defineInitHook = function(f) {
+      CodeMirror4.defineInitHook = function(f) {
         return initHooks.push(f);
       };
       function indentLine(cm, n, how, aggressive) {
-        var doc2 = cm.doc, state;
+        var doc2 = cm.doc, state2;
         if (how == null) {
           how = "add";
         }
@@ -9033,7 +9033,7 @@ var require_codemirror = __commonJS({
           if (!doc2.mode.indent) {
             how = "prev";
           } else {
-            state = getContextBefore(cm, n).state;
+            state2 = getContextBefore(cm, n).state;
           }
         }
         var tabSize = cm.options.tabSize;
@@ -9046,7 +9046,7 @@ var require_codemirror = __commonJS({
           indentation = 0;
           how = "not";
         } else if (how == "smart") {
-          indentation = doc2.mode.indent(state, line.text.slice(curSpaceString.length), line.text);
+          indentation = doc2.mode.indent(state2, line.text.slice(curSpaceString.length), line.text);
           if (indentation == Pass || indentation > 150) {
             if (!aggressive) {
               return;
@@ -9218,7 +9218,7 @@ var require_codemirror = __commonJS({
       }
       function hiddenTextarea() {
         var te = elt("textarea", null, null, "position: absolute; bottom: -1em; padding: 0; width: 1px; height: 1em; min-height: 1em; outline: none");
-        var div = elt("div", [
+        var div2 = elt("div", [
           te
         ], null, "overflow: hidden; position: relative; width: 3px; height: 0px;");
         if (webkit) {
@@ -9229,13 +9229,13 @@ var require_codemirror = __commonJS({
         if (ios) {
           te.style.border = "1px solid black";
         }
-        return div;
+        return div2;
       }
-      function addEditorMethods(CodeMirror4) {
-        var optionHandlers2 = CodeMirror4.optionHandlers;
-        var helpers = CodeMirror4.helpers = {};
-        CodeMirror4.prototype = {
-          constructor: CodeMirror4,
+      function addEditorMethods(CodeMirror5) {
+        var optionHandlers2 = CodeMirror5.optionHandlers;
+        var helpers = CodeMirror5.helpers = {};
+        CodeMirror5.prototype = {
+          constructor: CodeMirror5,
           focus: function() {
             win(this).focus();
             this.display.input.focus();
@@ -9270,7 +9270,7 @@ var require_codemirror = __commonJS({
             }
           },
           addOverlay: methodOp(function(spec, options) {
-            var mode = spec.token ? spec : CodeMirror4.getMode(this.options, spec);
+            var mode = spec.token ? spec : CodeMirror5.getMode(this.options, spec);
             if (mode.startState) {
               throw new Error("Overlays may not be stateful.");
             }
@@ -9369,7 +9369,7 @@ var require_codemirror = __commonJS({
             if (!mode.innerMode) {
               return mode;
             }
-            return CodeMirror4.innerMode(mode, this.getTokenAt(pos).state).mode;
+            return CodeMirror5.innerMode(mode, this.getTokenAt(pos).state).mode;
           },
           getHelper: function(pos, type) {
             return this.getHelpers(pos, type)[0];
@@ -9508,7 +9508,7 @@ var require_codemirror = __commonJS({
               });
             }
           },
-          triggerOnKeyDown: methodOp(onKeyDown),
+          triggerOnKeyDown: methodOp(onKeyDown2),
           triggerOnKeyPress: methodOp(onKeyPress),
           triggerOnKeyUp: onKeyUp,
           triggerOnMouseDown: methodOp(onMouseDown),
@@ -9778,17 +9778,17 @@ var require_codemirror = __commonJS({
             return this.display.gutters;
           }
         };
-        eventMixin(CodeMirror4);
-        CodeMirror4.registerHelper = function(type, name, value) {
+        eventMixin(CodeMirror5);
+        CodeMirror5.registerHelper = function(type, name, value) {
           if (!helpers.hasOwnProperty(type)) {
-            helpers[type] = CodeMirror4[type] = {
+            helpers[type] = CodeMirror5[type] = {
               _global: []
             };
           }
           helpers[type][name] = value;
         };
-        CodeMirror4.registerGlobalHelper = function(type, name, predicate, value) {
-          CodeMirror4.registerHelper(type, name, value);
+        CodeMirror5.registerGlobalHelper = function(type, name, predicate, value) {
+          CodeMirror5.registerHelper(type, name, value);
           helpers[type]._global.push({
             pred: predicate,
             val: value
@@ -9906,21 +9906,21 @@ var require_codemirror = __commonJS({
       ContentEditableInput.prototype.init = function(display) {
         var this$1 = this;
         var input = this, cm = input.cm;
-        var div = input.div = display.lineDiv;
-        div.contentEditable = true;
-        disableBrowserMagic(div, cm.options.spellcheck, cm.options.autocorrect, cm.options.autocapitalize);
+        var div2 = input.div = display.lineDiv;
+        div2.contentEditable = true;
+        disableBrowserMagic(div2, cm.options.spellcheck, cm.options.autocorrect, cm.options.autocapitalize);
         function belongsToInput(e) {
-          for (var t = e.target; t; t = t.parentNode) {
-            if (t == div) {
+          for (var t2 = e.target; t2; t2 = t2.parentNode) {
+            if (t2 == div2) {
               return true;
             }
-            if (/\bCodeMirror-(?:line)?widget\b/.test(t.className)) {
+            if (/\bCodeMirror-(?:line)?widget\b/.test(t2.className)) {
               break;
             }
           }
           return false;
         }
-        on(div, "paste", function(e) {
+        on(div2, "paste", function(e) {
           if (!belongsToInput(e) || signalDOMEvent(cm, e) || handlePaste(e, cm)) {
             return;
           }
@@ -9930,13 +9930,13 @@ var require_codemirror = __commonJS({
             }), 20);
           }
         });
-        on(div, "compositionstart", function(e) {
+        on(div2, "compositionstart", function(e) {
           this$1.composing = {
             data: e.data,
             done: false
           };
         });
-        on(div, "compositionupdate", function(e) {
+        on(div2, "compositionupdate", function(e) {
           if (!this$1.composing) {
             this$1.composing = {
               data: e.data,
@@ -9944,7 +9944,7 @@ var require_codemirror = __commonJS({
             };
           }
         });
-        on(div, "compositionend", function(e) {
+        on(div2, "compositionend", function(e) {
           if (this$1.composing) {
             if (e.data != this$1.composing.data) {
               this$1.readFromDOMSoon();
@@ -9952,10 +9952,10 @@ var require_codemirror = __commonJS({
             this$1.composing.done = true;
           }
         });
-        on(div, "touchstart", function() {
+        on(div2, "touchstart", function() {
           return input.forceCompositionEnd();
         });
-        on(div, "input", function() {
+        on(div2, "input", function() {
           if (!this$1.composing) {
             this$1.readFromDOMSoon();
           }
@@ -10000,18 +10000,18 @@ var require_codemirror = __commonJS({
           disableBrowserMagic(te);
           cm.display.lineSpace.insertBefore(kludge, cm.display.lineSpace.firstChild);
           te.value = lastCopied.text.join("\n");
-          var hadFocus = activeElt(rootNode(div));
+          var hadFocus = activeElt(rootNode(div2));
           selectInput(te);
           setTimeout(function() {
             cm.display.lineSpace.removeChild(kludge);
             hadFocus.focus();
-            if (hadFocus == div) {
+            if (hadFocus == div2) {
               input.showPrimarySelection();
             }
           }, 50);
         }
-        on(div, "copy", onCopyCut);
-        on(div, "cut", onCopyCut);
+        on(div2, "copy", onCopyCut);
+        on(div2, "cut", onCopyCut);
       };
       ContentEditableInput.prototype.screenReaderLabelChanged = function(label) {
         if (label) {
@@ -10927,60 +10927,60 @@ var require_codemirror = __commonJS({
           };
         };
         textarea.style.display = "none";
-        var cm = CodeMirror3(function(node) {
+        var cm = CodeMirror4(function(node) {
           return textarea.parentNode.insertBefore(node, textarea.nextSibling);
         }, options);
         return cm;
       }
-      function addLegacyProps(CodeMirror4) {
-        CodeMirror4.off = off;
-        CodeMirror4.on = on;
-        CodeMirror4.wheelEventPixels = wheelEventPixels;
-        CodeMirror4.Doc = Doc;
-        CodeMirror4.splitLines = splitLinesAuto;
-        CodeMirror4.countColumn = countColumn;
-        CodeMirror4.findColumn = findColumn;
-        CodeMirror4.isWordChar = isWordCharBasic;
-        CodeMirror4.Pass = Pass;
-        CodeMirror4.signal = signal;
-        CodeMirror4.Line = Line;
-        CodeMirror4.changeEnd = changeEnd;
-        CodeMirror4.scrollbarModel = scrollbarModel;
-        CodeMirror4.Pos = Pos;
-        CodeMirror4.cmpPos = cmp;
-        CodeMirror4.modes = modes;
-        CodeMirror4.mimeModes = mimeModes;
-        CodeMirror4.resolveMode = resolveMode;
-        CodeMirror4.getMode = getMode;
-        CodeMirror4.modeExtensions = modeExtensions;
-        CodeMirror4.extendMode = extendMode;
-        CodeMirror4.copyState = copyState;
-        CodeMirror4.startState = startState;
-        CodeMirror4.innerMode = innerMode;
-        CodeMirror4.commands = commands;
-        CodeMirror4.keyMap = keyMap;
-        CodeMirror4.keyName = keyName;
-        CodeMirror4.isModifierKey = isModifierKey;
-        CodeMirror4.lookupKey = lookupKey;
-        CodeMirror4.normalizeKeyMap = normalizeKeyMap;
-        CodeMirror4.StringStream = StringStream;
-        CodeMirror4.SharedTextMarker = SharedTextMarker;
-        CodeMirror4.TextMarker = TextMarker;
-        CodeMirror4.LineWidget = LineWidget;
-        CodeMirror4.e_preventDefault = e_preventDefault;
-        CodeMirror4.e_stopPropagation = e_stopPropagation;
-        CodeMirror4.e_stop = e_stop;
-        CodeMirror4.addClass = addClass;
-        CodeMirror4.contains = contains;
-        CodeMirror4.rmClass = rmClass;
-        CodeMirror4.keyNames = keyNames;
+      function addLegacyProps(CodeMirror5) {
+        CodeMirror5.off = off;
+        CodeMirror5.on = on;
+        CodeMirror5.wheelEventPixels = wheelEventPixels;
+        CodeMirror5.Doc = Doc;
+        CodeMirror5.splitLines = splitLinesAuto;
+        CodeMirror5.countColumn = countColumn;
+        CodeMirror5.findColumn = findColumn;
+        CodeMirror5.isWordChar = isWordCharBasic;
+        CodeMirror5.Pass = Pass;
+        CodeMirror5.signal = signal;
+        CodeMirror5.Line = Line;
+        CodeMirror5.changeEnd = changeEnd;
+        CodeMirror5.scrollbarModel = scrollbarModel;
+        CodeMirror5.Pos = Pos;
+        CodeMirror5.cmpPos = cmp;
+        CodeMirror5.modes = modes;
+        CodeMirror5.mimeModes = mimeModes;
+        CodeMirror5.resolveMode = resolveMode;
+        CodeMirror5.getMode = getMode;
+        CodeMirror5.modeExtensions = modeExtensions;
+        CodeMirror5.extendMode = extendMode;
+        CodeMirror5.copyState = copyState;
+        CodeMirror5.startState = startState;
+        CodeMirror5.innerMode = innerMode;
+        CodeMirror5.commands = commands;
+        CodeMirror5.keyMap = keyMap;
+        CodeMirror5.keyName = keyName;
+        CodeMirror5.isModifierKey = isModifierKey;
+        CodeMirror5.lookupKey = lookupKey;
+        CodeMirror5.normalizeKeyMap = normalizeKeyMap;
+        CodeMirror5.StringStream = StringStream;
+        CodeMirror5.SharedTextMarker = SharedTextMarker;
+        CodeMirror5.TextMarker = TextMarker;
+        CodeMirror5.LineWidget = LineWidget;
+        CodeMirror5.e_preventDefault = e_preventDefault;
+        CodeMirror5.e_stopPropagation = e_stopPropagation;
+        CodeMirror5.e_stop = e_stop;
+        CodeMirror5.addClass = addClass;
+        CodeMirror5.contains = contains;
+        CodeMirror5.rmClass = rmClass;
+        CodeMirror5.keyNames = keyNames;
       }
-      defineOptions(CodeMirror3);
-      addEditorMethods(CodeMirror3);
+      defineOptions(CodeMirror4);
+      addEditorMethods(CodeMirror4);
       var dontDelegate = "iter insert remove copy getEditor constructor".split(" ");
       for (var prop in Doc.prototype) {
         if (Doc.prototype.hasOwnProperty(prop) && indexOf(dontDelegate, prop) < 0) {
-          CodeMirror3.prototype[prop] = /* @__PURE__ */ function(method) {
+          CodeMirror4.prototype[prop] = /* @__PURE__ */ function(method) {
             return function() {
               return method.apply(this.doc, arguments);
             };
@@ -10988,35 +10988,35 @@ var require_codemirror = __commonJS({
         }
       }
       eventMixin(Doc);
-      CodeMirror3.inputStyles = {
+      CodeMirror4.inputStyles = {
         "textarea": TextareaInput,
         "contenteditable": ContentEditableInput
       };
-      CodeMirror3.defineMode = function(name) {
-        if (!CodeMirror3.defaults.mode && name != "null") {
-          CodeMirror3.defaults.mode = name;
+      CodeMirror4.defineMode = function(name) {
+        if (!CodeMirror4.defaults.mode && name != "null") {
+          CodeMirror4.defaults.mode = name;
         }
         defineMode.apply(this, arguments);
       };
-      CodeMirror3.defineMIME = defineMIME;
-      CodeMirror3.defineMode("null", function() {
+      CodeMirror4.defineMIME = defineMIME;
+      CodeMirror4.defineMode("null", function() {
         return {
           token: function(stream) {
             return stream.skipToEnd();
           }
         };
       });
-      CodeMirror3.defineMIME("text/plain", "null");
-      CodeMirror3.defineExtension = function(name, func) {
-        CodeMirror3.prototype[name] = func;
+      CodeMirror4.defineMIME("text/plain", "null");
+      CodeMirror4.defineExtension = function(name, func) {
+        CodeMirror4.prototype[name] = func;
       };
-      CodeMirror3.defineDocExtension = function(name, func) {
+      CodeMirror4.defineDocExtension = function(name, func) {
         Doc.prototype[name] = func;
       };
-      CodeMirror3.fromTextArea = fromTextArea;
-      addLegacyProps(CodeMirror3);
-      CodeMirror3.version = "5.65.16";
-      return CodeMirror3;
+      CodeMirror4.fromTextArea = fromTextArea;
+      addLegacyProps(CodeMirror4);
+      CodeMirror4.version = "5.65.16";
+      return CodeMirror4;
     });
   }
 });
@@ -11030,9 +11030,9 @@ var require_javascript = __commonJS({
         "../../lib/codemirror"
       ], mod);
       else mod(CodeMirror);
-    })(function(CodeMirror3) {
+    })(function(CodeMirror4) {
       "use strict";
-      CodeMirror3.defineMode("javascript", function(config, parserConfig) {
+      CodeMirror4.defineMode("javascript", function(config, parserConfig) {
         var indentUnit = config.indentUnit;
         var statementIndent = parserConfig.statementIndent;
         var jsonldMode = parserConfig.jsonld;
@@ -11115,11 +11115,11 @@ var require_javascript = __commonJS({
           content = cont2;
           return style;
         }
-        function tokenBase(stream, state) {
+        function tokenBase(stream, state2) {
           var ch = stream.next();
           if (ch == '"' || ch == "'") {
-            state.tokenize = tokenString(ch);
-            return state.tokenize(stream, state);
+            state2.tokenize = tokenString(ch);
+            return state2.tokenize(stream, state2);
           } else if (ch == "." && stream.match(/^\d[\d_]*(?:[eE][+\-]?[\d_]+)?/)) {
             return ret("number", "number");
           } else if (ch == "." && stream.match("..")) {
@@ -11135,12 +11135,12 @@ var require_javascript = __commonJS({
             return ret("number", "number");
           } else if (ch == "/") {
             if (stream.eat("*")) {
-              state.tokenize = tokenComment;
-              return tokenComment(stream, state);
+              state2.tokenize = tokenComment;
+              return tokenComment(stream, state2);
             } else if (stream.eat("/")) {
               stream.skipToEnd();
               return ret("comment", "comment");
-            } else if (expressionAllowed(stream, state, 1)) {
+            } else if (expressionAllowed(stream, state2, 1)) {
               readRegexp(stream);
               stream.match(/^\b(([gimyus])(?![gimyus]*\2))+\b/);
               return ret("regexp", "string-2");
@@ -11149,8 +11149,8 @@ var require_javascript = __commonJS({
               return ret("operator", "operator", stream.current());
             }
           } else if (ch == "`") {
-            state.tokenize = tokenQuasi;
-            return tokenQuasi(stream, state);
+            state2.tokenize = tokenQuasi;
+            return tokenQuasi(stream, state2);
           } else if (ch == "#" && stream.peek() == "!") {
             stream.skipToEnd();
             return ret("meta", "meta");
@@ -11160,7 +11160,7 @@ var require_javascript = __commonJS({
             stream.skipToEnd();
             return ret("comment", "comment");
           } else if (isOperatorChar.test(ch)) {
-            if (ch != ">" || !state.lexical || state.lexical.type != ">") {
+            if (ch != ">" || !state2.lexical || state2.lexical.type != ">") {
               if (stream.eat("=")) {
                 if (ch == "!" || ch == "=") stream.eat("=");
               } else if (/[<>*+\-|&?]/.test(ch)) {
@@ -11173,7 +11173,7 @@ var require_javascript = __commonJS({
           } else if (wordRE.test(ch)) {
             stream.eatWhile(wordRE);
             var word = stream.current();
-            if (state.lastType != ".") {
+            if (state2.lastType != ".") {
               if (keywords.propertyIsEnumerable(word)) {
                 var kw = keywords[word];
                 return ret(kw.type, kw.style, word);
@@ -11184,36 +11184,36 @@ var require_javascript = __commonJS({
           }
         }
         function tokenString(quote) {
-          return function(stream, state) {
+          return function(stream, state2) {
             var escaped = false, next;
             if (jsonldMode && stream.peek() == "@" && stream.match(isJsonldKeyword)) {
-              state.tokenize = tokenBase;
+              state2.tokenize = tokenBase;
               return ret("jsonld-keyword", "meta");
             }
             while ((next = stream.next()) != null) {
               if (next == quote && !escaped) break;
               escaped = !escaped && next == "\\";
             }
-            if (!escaped) state.tokenize = tokenBase;
+            if (!escaped) state2.tokenize = tokenBase;
             return ret("string", "string");
           };
         }
-        function tokenComment(stream, state) {
+        function tokenComment(stream, state2) {
           var maybeEnd = false, ch;
           while (ch = stream.next()) {
             if (ch == "/" && maybeEnd) {
-              state.tokenize = tokenBase;
+              state2.tokenize = tokenBase;
               break;
             }
             maybeEnd = ch == "*";
           }
           return ret("comment", "comment");
         }
-        function tokenQuasi(stream, state) {
+        function tokenQuasi(stream, state2) {
           var escaped = false, next;
           while ((next = stream.next()) != null) {
             if (!escaped && (next == "`" || next == "$" && stream.eat("{"))) {
-              state.tokenize = tokenBase;
+              state2.tokenize = tokenBase;
               break;
             }
             escaped = !escaped && next == "\\";
@@ -11221,8 +11221,8 @@ var require_javascript = __commonJS({
           return ret("quasi", "string-2", stream.current());
         }
         var brackets = "([{}])";
-        function findFatArrow(stream, state) {
-          if (state.fatArrowAt) state.fatArrowAt = null;
+        function findFatArrow(stream, state2) {
+          if (state2.fatArrowAt) state2.fatArrowAt = null;
           var arrow = stream.string.indexOf("=>", stream.start);
           if (arrow < 0) return;
           if (isTS) {
@@ -11260,7 +11260,7 @@ var require_javascript = __commonJS({
               break;
             }
           }
-          if (sawSomething && !depth) state.fatArrowAt = pos;
+          if (sawSomething && !depth) state2.fatArrowAt = pos;
         }
         var atomicTypes = {
           "atom": true,
@@ -11280,26 +11280,26 @@ var require_javascript = __commonJS({
           this.info = info;
           if (align != null) this.align = align;
         }
-        function inScope(state, varname) {
+        function inScope(state2, varname) {
           if (!trackScope) return false;
-          for (var v = state.localVars; v; v = v.next) if (v.name == varname) return true;
-          for (var cx2 = state.context; cx2; cx2 = cx2.prev) {
+          for (var v = state2.localVars; v; v = v.next) if (v.name == varname) return true;
+          for (var cx2 = state2.context; cx2; cx2 = cx2.prev) {
             for (var v = cx2.vars; v; v = v.next) if (v.name == varname) return true;
           }
         }
-        function parseJS(state, style, type2, content2, stream) {
-          var cc = state.cc;
-          cx.state = state;
+        function parseJS(state2, style, type2, content2, stream) {
+          var cc = state2.cc;
+          cx.state = state2;
           cx.stream = stream;
           cx.marked = null, cx.cc = cc;
           cx.style = style;
-          if (!state.lexical.hasOwnProperty("align")) state.lexical.align = true;
+          if (!state2.lexical.hasOwnProperty("align")) state2.lexical.align = true;
           while (true) {
             var combinator = cc.length ? cc.pop() : jsonMode ? expression : statement;
             if (combinator(type2, content2)) {
               while (cc.length && cc[cc.length - 1].lex) cc.pop()();
               if (cx.marked) return cx.marked;
-              if (type2 == "variable" && inScope(state, content2)) return "variable-2";
+              if (type2 == "variable" && inScope(state2, content2)) return "variable-2";
               return style;
             }
           }
@@ -11322,22 +11322,22 @@ var require_javascript = __commonJS({
           return false;
         }
         function register(varname) {
-          var state = cx.state;
+          var state2 = cx.state;
           cx.marked = "def";
           if (!trackScope) return;
-          if (state.context) {
-            if (state.lexical.info == "var" && state.context && state.context.block) {
-              var newContext = registerVarScoped(varname, state.context);
+          if (state2.context) {
+            if (state2.lexical.info == "var" && state2.context && state2.context.block) {
+              var newContext = registerVarScoped(varname, state2.context);
               if (newContext != null) {
-                state.context = newContext;
+                state2.context = newContext;
                 return;
               }
-            } else if (!inList(varname, state.localVars)) {
-              state.localVars = new Var(varname, state.localVars);
+            } else if (!inList(varname, state2.localVars)) {
+              state2.localVars = new Var(varname, state2.localVars);
               return;
             }
           }
-          if (parserConfig.globalVars && !inList(varname, state.globalVars)) state.globalVars = new Var(varname, state.globalVars);
+          if (parserConfig.globalVars && !inList(varname, state2.globalVars)) state2.globalVars = new Var(varname, state2.globalVars);
         }
         function registerVarScoped(varname, context) {
           if (!context) {
@@ -11382,19 +11382,19 @@ var require_javascript = __commonJS({
         popcontext.lex = true;
         function pushlex(type2, info) {
           var result = function() {
-            var state = cx.state, indent = state.indented;
-            if (state.lexical.type == "stat") indent = state.lexical.indented;
-            else for (var outer = state.lexical; outer && outer.type == ")" && outer.align; outer = outer.prev) indent = outer.indented;
-            state.lexical = new JSLexical(indent, cx.stream.column(), type2, null, state.lexical, info);
+            var state2 = cx.state, indent2 = state2.indented;
+            if (state2.lexical.type == "stat") indent2 = state2.lexical.indented;
+            else for (var outer = state2.lexical; outer && outer.type == ")" && outer.align; outer = outer.prev) indent2 = outer.indented;
+            state2.lexical = new JSLexical(indent2, cx.stream.column(), type2, null, state2.lexical, info);
           };
           result.lex = true;
           return result;
         }
         function poplex() {
-          var state = cx.state;
-          if (state.lexical.prev) {
-            if (state.lexical.type == ")") state.indented = state.lexical.indented;
-            state.lexical = state.lexical.prev;
+          var state2 = cx.state;
+          if (state2.lexical.prev) {
+            if (state2.lexical.type == ")") state2.indented = state2.lexical.indented;
+            state2.lexical = state2.lexical.prev;
           }
         }
         poplex.lex = true;
@@ -11944,15 +11944,15 @@ var require_javascript = __commonJS({
         function enummember() {
           return pass(pattern, maybeAssign);
         }
-        function isContinuedStatement(state, textAfter) {
-          return state.lastType == "operator" || state.lastType == "," || isOperatorChar.test(textAfter.charAt(0)) || /[,.]/.test(textAfter.charAt(0));
+        function isContinuedStatement(state2, textAfter) {
+          return state2.lastType == "operator" || state2.lastType == "," || isOperatorChar.test(textAfter.charAt(0)) || /[,.]/.test(textAfter.charAt(0));
         }
-        function expressionAllowed(stream, state, backUp) {
-          return state.tokenize == tokenBase && /^(?:operator|sof|keyword [bcd]|case|new|export|default|spread|[\[{}\(,;:]|=>)$/.test(state.lastType) || state.lastType == "quasi" && /\{\s*$/.test(stream.string.slice(0, stream.pos - (backUp || 0)));
+        function expressionAllowed(stream, state2, backUp) {
+          return state2.tokenize == tokenBase && /^(?:operator|sof|keyword [bcd]|case|new|export|default|spread|[\[{}\(,;:]|=>)$/.test(state2.lastType) || state2.lastType == "quasi" && /\{\s*$/.test(stream.string.slice(0, stream.pos - (backUp || 0)));
         }
         return {
           startState: function(basecolumn) {
-            var state = {
+            var state2 = {
               tokenize: tokenBase,
               lastType: "sof",
               cc: [],
@@ -11961,37 +11961,37 @@ var require_javascript = __commonJS({
               context: parserConfig.localVars && new Context(null, null, false),
               indented: basecolumn || 0
             };
-            if (parserConfig.globalVars && typeof parserConfig.globalVars == "object") state.globalVars = parserConfig.globalVars;
-            return state;
+            if (parserConfig.globalVars && typeof parserConfig.globalVars == "object") state2.globalVars = parserConfig.globalVars;
+            return state2;
           },
-          token: function(stream, state) {
+          token: function(stream, state2) {
             if (stream.sol()) {
-              if (!state.lexical.hasOwnProperty("align")) state.lexical.align = false;
-              state.indented = stream.indentation();
-              findFatArrow(stream, state);
+              if (!state2.lexical.hasOwnProperty("align")) state2.lexical.align = false;
+              state2.indented = stream.indentation();
+              findFatArrow(stream, state2);
             }
-            if (state.tokenize != tokenComment && stream.eatSpace()) return null;
-            var style = state.tokenize(stream, state);
+            if (state2.tokenize != tokenComment && stream.eatSpace()) return null;
+            var style = state2.tokenize(stream, state2);
             if (type == "comment") return style;
-            state.lastType = type == "operator" && (content == "++" || content == "--") ? "incdec" : type;
-            return parseJS(state, style, type, content, stream);
+            state2.lastType = type == "operator" && (content == "++" || content == "--") ? "incdec" : type;
+            return parseJS(state2, style, type, content, stream);
           },
-          indent: function(state, textAfter) {
-            if (state.tokenize == tokenComment || state.tokenize == tokenQuasi) return CodeMirror3.Pass;
-            if (state.tokenize != tokenBase) return 0;
-            var firstChar = textAfter && textAfter.charAt(0), lexical = state.lexical, top;
-            if (!/^\s*else\b/.test(textAfter)) for (var i = state.cc.length - 1; i >= 0; --i) {
-              var c = state.cc[i];
+          indent: function(state2, textAfter) {
+            if (state2.tokenize == tokenComment || state2.tokenize == tokenQuasi) return CodeMirror4.Pass;
+            if (state2.tokenize != tokenBase) return 0;
+            var firstChar = textAfter && textAfter.charAt(0), lexical = state2.lexical, top;
+            if (!/^\s*else\b/.test(textAfter)) for (var i = state2.cc.length - 1; i >= 0; --i) {
+              var c = state2.cc[i];
               if (c == poplex) lexical = lexical.prev;
               else if (c != maybeelse && c != popcontext) break;
             }
-            while ((lexical.type == "stat" || lexical.type == "form") && (firstChar == "}" || (top = state.cc[state.cc.length - 1]) && (top == maybeoperatorComma || top == maybeoperatorNoComma) && !/^[,\.=+\-*:?[\(]/.test(textAfter))) lexical = lexical.prev;
+            while ((lexical.type == "stat" || lexical.type == "form") && (firstChar == "}" || (top = state2.cc[state2.cc.length - 1]) && (top == maybeoperatorComma || top == maybeoperatorNoComma) && !/^[,\.=+\-*:?[\(]/.test(textAfter))) lexical = lexical.prev;
             if (statementIndent && lexical.type == ")" && lexical.prev.type == "stat") lexical = lexical.prev;
             var type2 = lexical.type, closing = firstChar == type2;
-            if (type2 == "vardef") return lexical.indented + (state.lastType == "operator" || state.lastType == "," ? lexical.info.length + 1 : 0);
+            if (type2 == "vardef") return lexical.indented + (state2.lastType == "operator" || state2.lastType == "," ? lexical.info.length + 1 : 0);
             else if (type2 == "form" && firstChar == "{") return lexical.indented;
             else if (type2 == "form") return lexical.indented + indentUnit;
-            else if (type2 == "stat") return lexical.indented + (isContinuedStatement(state, textAfter) ? statementIndent || indentUnit : 0);
+            else if (type2 == "stat") return lexical.indented + (isContinuedStatement(state2, textAfter) ? statementIndent || indentUnit : 0);
             else if (lexical.info == "switch" && !closing && parserConfig.doubleIndentSwitch != false) return lexical.indented + (/^(?:case|default)\b/.test(textAfter) ? indentUnit : 2 * indentUnit);
             else if (lexical.align) return lexical.column + (closing ? 0 : 1);
             else return lexical.indented + (closing ? 0 : indentUnit);
@@ -12007,40 +12007,378 @@ var require_javascript = __commonJS({
           jsonldMode,
           jsonMode,
           expressionAllowed,
-          skipExpression: function(state) {
-            parseJS(state, "atom", "atom", "true", new CodeMirror3.StringStream("", 2, null));
+          skipExpression: function(state2) {
+            parseJS(state2, "atom", "atom", "true", new CodeMirror4.StringStream("", 2, null));
           }
         };
       });
-      CodeMirror3.registerHelper("wordChars", "javascript", /[\w$]/);
-      CodeMirror3.defineMIME("text/javascript", "javascript");
-      CodeMirror3.defineMIME("text/ecmascript", "javascript");
-      CodeMirror3.defineMIME("application/javascript", "javascript");
-      CodeMirror3.defineMIME("application/x-javascript", "javascript");
-      CodeMirror3.defineMIME("application/ecmascript", "javascript");
-      CodeMirror3.defineMIME("application/json", {
+      CodeMirror4.registerHelper("wordChars", "javascript", /[\w$]/);
+      CodeMirror4.defineMIME("text/javascript", "javascript");
+      CodeMirror4.defineMIME("text/ecmascript", "javascript");
+      CodeMirror4.defineMIME("application/javascript", "javascript");
+      CodeMirror4.defineMIME("application/x-javascript", "javascript");
+      CodeMirror4.defineMIME("application/ecmascript", "javascript");
+      CodeMirror4.defineMIME("application/json", {
         name: "javascript",
         json: true
       });
-      CodeMirror3.defineMIME("application/x-json", {
+      CodeMirror4.defineMIME("application/x-json", {
         name: "javascript",
         json: true
       });
-      CodeMirror3.defineMIME("application/manifest+json", {
+      CodeMirror4.defineMIME("application/manifest+json", {
         name: "javascript",
         json: true
       });
-      CodeMirror3.defineMIME("application/ld+json", {
+      CodeMirror4.defineMIME("application/ld+json", {
         name: "javascript",
         jsonld: true
       });
-      CodeMirror3.defineMIME("text/typescript", {
+      CodeMirror4.defineMIME("text/typescript", {
         name: "javascript",
         typescript: true
       });
-      CodeMirror3.defineMIME("application/typescript", {
+      CodeMirror4.defineMIME("application/typescript", {
         name: "javascript",
         typescript: true
+      });
+    });
+  }
+});
+
+// ../../../Library/Caches/deno/npm/registry.npmjs.org/codemirror/5.65.16/addon/edit/closebrackets.js
+var require_closebrackets = __commonJS({
+  "../../../Library/Caches/deno/npm/registry.npmjs.org/codemirror/5.65.16/addon/edit/closebrackets.js"(exports, module) {
+    (function(mod) {
+      if (typeof exports == "object" && typeof module == "object") mod(require_codemirror());
+      else if (typeof define == "function" && define.amd) define([
+        "../../lib/codemirror"
+      ], mod);
+      else mod(CodeMirror);
+    })(function(CodeMirror4) {
+      var defaults = {
+        pairs: `()[]{}''""`,
+        closeBefore: `)]}'":;>`,
+        triples: "",
+        explode: "[]{}"
+      };
+      var Pos = CodeMirror4.Pos;
+      CodeMirror4.defineOption("autoCloseBrackets", false, function(cm, val, old) {
+        if (old && old != CodeMirror4.Init) {
+          cm.removeKeyMap(keyMap);
+          cm.state.closeBrackets = null;
+        }
+        if (val) {
+          ensureBound(getOption(val, "pairs"));
+          cm.state.closeBrackets = val;
+          cm.addKeyMap(keyMap);
+        }
+      });
+      function getOption(conf, name) {
+        if (name == "pairs" && typeof conf == "string") return conf;
+        if (typeof conf == "object" && conf[name] != null) return conf[name];
+        return defaults[name];
+      }
+      var keyMap = {
+        Backspace: handleBackspace,
+        Enter: handleEnter
+      };
+      function ensureBound(chars) {
+        for (var i = 0; i < chars.length; i++) {
+          var ch = chars.charAt(i), key = "'" + ch + "'";
+          if (!keyMap[key]) keyMap[key] = handler(ch);
+        }
+      }
+      ensureBound(defaults.pairs + "`");
+      function handler(ch) {
+        return function(cm) {
+          return handleChar(cm, ch);
+        };
+      }
+      function getConfig(cm) {
+        var deflt = cm.state.closeBrackets;
+        if (!deflt || deflt.override) return deflt;
+        var mode = cm.getModeAt(cm.getCursor());
+        return mode.closeBrackets || deflt;
+      }
+      function handleBackspace(cm) {
+        var conf = getConfig(cm);
+        if (!conf || cm.getOption("disableInput")) return CodeMirror4.Pass;
+        var pairs = getOption(conf, "pairs");
+        var ranges = cm.listSelections();
+        for (var i = 0; i < ranges.length; i++) {
+          if (!ranges[i].empty()) return CodeMirror4.Pass;
+          var around = charsAround(cm, ranges[i].head);
+          if (!around || pairs.indexOf(around) % 2 != 0) return CodeMirror4.Pass;
+        }
+        for (var i = ranges.length - 1; i >= 0; i--) {
+          var cur = ranges[i].head;
+          cm.replaceRange("", Pos(cur.line, cur.ch - 1), Pos(cur.line, cur.ch + 1), "+delete");
+        }
+      }
+      function handleEnter(cm) {
+        var conf = getConfig(cm);
+        var explode = conf && getOption(conf, "explode");
+        if (!explode || cm.getOption("disableInput")) return CodeMirror4.Pass;
+        var ranges = cm.listSelections();
+        for (var i = 0; i < ranges.length; i++) {
+          if (!ranges[i].empty()) return CodeMirror4.Pass;
+          var around = charsAround(cm, ranges[i].head);
+          if (!around || explode.indexOf(around) % 2 != 0) return CodeMirror4.Pass;
+        }
+        cm.operation(function() {
+          var linesep = cm.lineSeparator() || "\n";
+          cm.replaceSelection(linesep + linesep, null);
+          moveSel(cm, -1);
+          ranges = cm.listSelections();
+          for (var i2 = 0; i2 < ranges.length; i2++) {
+            var line = ranges[i2].head.line;
+            cm.indentLine(line, null, true);
+            cm.indentLine(line + 1, null, true);
+          }
+        });
+      }
+      function moveSel(cm, dir) {
+        var newRanges = [], ranges = cm.listSelections(), primary = 0;
+        for (var i = 0; i < ranges.length; i++) {
+          var range = ranges[i];
+          if (range.head == cm.getCursor()) primary = i;
+          var pos = range.head.ch || dir > 0 ? {
+            line: range.head.line,
+            ch: range.head.ch + dir
+          } : {
+            line: range.head.line - 1
+          };
+          newRanges.push({
+            anchor: pos,
+            head: pos
+          });
+        }
+        cm.setSelections(newRanges, primary);
+      }
+      function contractSelection(sel) {
+        var inverted = CodeMirror4.cmpPos(sel.anchor, sel.head) > 0;
+        return {
+          anchor: new Pos(sel.anchor.line, sel.anchor.ch + (inverted ? -1 : 1)),
+          head: new Pos(sel.head.line, sel.head.ch + (inverted ? 1 : -1))
+        };
+      }
+      function handleChar(cm, ch) {
+        var conf = getConfig(cm);
+        if (!conf || cm.getOption("disableInput")) return CodeMirror4.Pass;
+        var pairs = getOption(conf, "pairs");
+        var pos = pairs.indexOf(ch);
+        if (pos == -1) return CodeMirror4.Pass;
+        var closeBefore = getOption(conf, "closeBefore");
+        var triples = getOption(conf, "triples");
+        var identical = pairs.charAt(pos + 1) == ch;
+        var ranges = cm.listSelections();
+        var opening = pos % 2 == 0;
+        var type;
+        for (var i = 0; i < ranges.length; i++) {
+          var range = ranges[i], cur = range.head, curType;
+          var next = cm.getRange(cur, Pos(cur.line, cur.ch + 1));
+          if (opening && !range.empty()) {
+            curType = "surround";
+          } else if ((identical || !opening) && next == ch) {
+            if (identical && stringStartsAfter(cm, cur)) curType = "both";
+            else if (triples.indexOf(ch) >= 0 && cm.getRange(cur, Pos(cur.line, cur.ch + 3)) == ch + ch + ch) curType = "skipThree";
+            else curType = "skip";
+          } else if (identical && cur.ch > 1 && triples.indexOf(ch) >= 0 && cm.getRange(Pos(cur.line, cur.ch - 2), cur) == ch + ch) {
+            if (cur.ch > 2 && /\bstring/.test(cm.getTokenTypeAt(Pos(cur.line, cur.ch - 2)))) return CodeMirror4.Pass;
+            curType = "addFour";
+          } else if (identical) {
+            var prev = cur.ch == 0 ? " " : cm.getRange(Pos(cur.line, cur.ch - 1), cur);
+            if (!CodeMirror4.isWordChar(next) && prev != ch && !CodeMirror4.isWordChar(prev)) curType = "both";
+            else return CodeMirror4.Pass;
+          } else if (opening && (next.length === 0 || /\s/.test(next) || closeBefore.indexOf(next) > -1)) {
+            curType = "both";
+          } else {
+            return CodeMirror4.Pass;
+          }
+          if (!type) type = curType;
+          else if (type != curType) return CodeMirror4.Pass;
+        }
+        var left = pos % 2 ? pairs.charAt(pos - 1) : ch;
+        var right = pos % 2 ? ch : pairs.charAt(pos + 1);
+        cm.operation(function() {
+          if (type == "skip") {
+            moveSel(cm, 1);
+          } else if (type == "skipThree") {
+            moveSel(cm, 3);
+          } else if (type == "surround") {
+            var sels = cm.getSelections();
+            for (var i2 = 0; i2 < sels.length; i2++) sels[i2] = left + sels[i2] + right;
+            cm.replaceSelections(sels, "around");
+            sels = cm.listSelections().slice();
+            for (var i2 = 0; i2 < sels.length; i2++) sels[i2] = contractSelection(sels[i2]);
+            cm.setSelections(sels);
+          } else if (type == "both") {
+            cm.replaceSelection(left + right, null);
+            cm.triggerElectric(left + right);
+            moveSel(cm, -1);
+          } else if (type == "addFour") {
+            cm.replaceSelection(left + left + left + left, "before");
+            moveSel(cm, 1);
+          }
+        });
+      }
+      function charsAround(cm, pos) {
+        var str = cm.getRange(Pos(pos.line, pos.ch - 1), Pos(pos.line, pos.ch + 1));
+        return str.length == 2 ? str : null;
+      }
+      function stringStartsAfter(cm, pos) {
+        var token = cm.getTokenAt(Pos(pos.line, pos.ch + 1));
+        return /\bstring/.test(token.type) && token.start == pos.ch && (pos.ch == 0 || !/\bstring/.test(cm.getTokenTypeAt(pos)));
+      }
+    });
+  }
+});
+
+// ../../../Library/Caches/deno/npm/registry.npmjs.org/codemirror/5.65.16/addon/edit/matchbrackets.js
+var require_matchbrackets = __commonJS({
+  "../../../Library/Caches/deno/npm/registry.npmjs.org/codemirror/5.65.16/addon/edit/matchbrackets.js"(exports, module) {
+    (function(mod) {
+      if (typeof exports == "object" && typeof module == "object") mod(require_codemirror());
+      else if (typeof define == "function" && define.amd) define([
+        "../../lib/codemirror"
+      ], mod);
+      else mod(CodeMirror);
+    })(function(CodeMirror4) {
+      var ie_lt8 = /MSIE \d/.test(navigator.userAgent) && (document.documentMode == null || document.documentMode < 8);
+      var Pos = CodeMirror4.Pos;
+      var matching = {
+        "(": ")>",
+        ")": "(<",
+        "[": "]>",
+        "]": "[<",
+        "{": "}>",
+        "}": "{<",
+        "<": ">>",
+        ">": "<<"
+      };
+      function bracketRegex(config) {
+        return config && config.bracketRegex || /[(){}[\]]/;
+      }
+      function findMatchingBracket(cm, where, config) {
+        var line = cm.getLineHandle(where.line), pos = where.ch - 1;
+        var afterCursor = config && config.afterCursor;
+        if (afterCursor == null) afterCursor = /(^| )cm-fat-cursor($| )/.test(cm.getWrapperElement().className);
+        var re = bracketRegex(config);
+        var match = !afterCursor && pos >= 0 && re.test(line.text.charAt(pos)) && matching[line.text.charAt(pos)] || re.test(line.text.charAt(pos + 1)) && matching[line.text.charAt(++pos)];
+        if (!match) return null;
+        var dir = match.charAt(1) == ">" ? 1 : -1;
+        if (config && config.strict && dir > 0 != (pos == where.ch)) return null;
+        var style = cm.getTokenTypeAt(Pos(where.line, pos + 1));
+        var found = scanForBracket(cm, Pos(where.line, pos + (dir > 0 ? 1 : 0)), dir, style, config);
+        if (found == null) return null;
+        return {
+          from: Pos(where.line, pos),
+          to: found && found.pos,
+          match: found && found.ch == match.charAt(0),
+          forward: dir > 0
+        };
+      }
+      function scanForBracket(cm, where, dir, style, config) {
+        var maxScanLen = config && config.maxScanLineLength || 1e4;
+        var maxScanLines = config && config.maxScanLines || 1e3;
+        var stack = [];
+        var re = bracketRegex(config);
+        var lineEnd = dir > 0 ? Math.min(where.line + maxScanLines, cm.lastLine() + 1) : Math.max(cm.firstLine() - 1, where.line - maxScanLines);
+        for (var lineNo = where.line; lineNo != lineEnd; lineNo += dir) {
+          var line = cm.getLine(lineNo);
+          if (!line) continue;
+          var pos = dir > 0 ? 0 : line.length - 1, end = dir > 0 ? line.length : -1;
+          if (line.length > maxScanLen) continue;
+          if (lineNo == where.line) pos = where.ch - (dir < 0 ? 1 : 0);
+          for (; pos != end; pos += dir) {
+            var ch = line.charAt(pos);
+            if (re.test(ch) && (style === void 0 || (cm.getTokenTypeAt(Pos(lineNo, pos + 1)) || "") == (style || ""))) {
+              var match = matching[ch];
+              if (match && match.charAt(1) == ">" == dir > 0) stack.push(ch);
+              else if (!stack.length) return {
+                pos: Pos(lineNo, pos),
+                ch
+              };
+              else stack.pop();
+            }
+          }
+        }
+        return lineNo - dir == (dir > 0 ? cm.lastLine() : cm.firstLine()) ? false : null;
+      }
+      function matchBrackets(cm, autoclear, config) {
+        var maxHighlightLen = cm.state.matchBrackets.maxHighlightLineLength || 1e3, highlightNonMatching = config && config.highlightNonMatching;
+        var marks = [], ranges = cm.listSelections();
+        for (var i = 0; i < ranges.length; i++) {
+          var match = ranges[i].empty() && findMatchingBracket(cm, ranges[i].head, config);
+          if (match && (match.match || highlightNonMatching !== false) && cm.getLine(match.from.line).length <= maxHighlightLen) {
+            var style = match.match ? "CodeMirror-matchingbracket" : "CodeMirror-nonmatchingbracket";
+            marks.push(cm.markText(match.from, Pos(match.from.line, match.from.ch + 1), {
+              className: style
+            }));
+            if (match.to && cm.getLine(match.to.line).length <= maxHighlightLen) marks.push(cm.markText(match.to, Pos(match.to.line, match.to.ch + 1), {
+              className: style
+            }));
+          }
+        }
+        if (marks.length) {
+          if (ie_lt8 && cm.state.focused) cm.focus();
+          var clear = function() {
+            cm.operation(function() {
+              for (var i2 = 0; i2 < marks.length; i2++) marks[i2].clear();
+            });
+          };
+          if (autoclear) setTimeout(clear, 800);
+          else return clear;
+        }
+      }
+      function doMatchBrackets(cm) {
+        cm.operation(function() {
+          if (cm.state.matchBrackets.currentlyHighlighted) {
+            cm.state.matchBrackets.currentlyHighlighted();
+            cm.state.matchBrackets.currentlyHighlighted = null;
+          }
+          cm.state.matchBrackets.currentlyHighlighted = matchBrackets(cm, false, cm.state.matchBrackets);
+        });
+      }
+      function clearHighlighted(cm) {
+        if (cm.state.matchBrackets && cm.state.matchBrackets.currentlyHighlighted) {
+          cm.state.matchBrackets.currentlyHighlighted();
+          cm.state.matchBrackets.currentlyHighlighted = null;
+        }
+      }
+      CodeMirror4.defineOption("matchBrackets", false, function(cm, val, old) {
+        if (old && old != CodeMirror4.Init) {
+          cm.off("cursorActivity", doMatchBrackets);
+          cm.off("focus", doMatchBrackets);
+          cm.off("blur", clearHighlighted);
+          clearHighlighted(cm);
+        }
+        if (val) {
+          cm.state.matchBrackets = typeof val == "object" ? val : {};
+          cm.on("cursorActivity", doMatchBrackets);
+          cm.on("focus", doMatchBrackets);
+          cm.on("blur", clearHighlighted);
+        }
+      });
+      CodeMirror4.defineExtension("matchBrackets", function() {
+        matchBrackets(this, true);
+      });
+      CodeMirror4.defineExtension("findMatchingBracket", function(pos, config, oldConfig) {
+        if (oldConfig || typeof config == "boolean") {
+          if (!oldConfig) {
+            config = config ? {
+              strict: true
+            } : null;
+          } else {
+            oldConfig.strict = config;
+            config = oldConfig;
+          }
+        }
+        return findMatchingBracket(this, pos, config);
+      });
+      CodeMirror4.defineExtension("scanForBracket", function(pos, dir, style, config) {
+        return scanForBracket(this, pos, dir, style, config);
       });
     });
   }
@@ -12055,11 +12393,11 @@ var require_show_hint = __commonJS({
         "../../lib/codemirror"
       ], mod);
       else mod(CodeMirror);
-    })(function(CodeMirror3) {
+    })(function(CodeMirror4) {
       "use strict";
       var HINT_ELEMENT_CLASS = "CodeMirror-hint";
       var ACTIVE_HINT_ELEMENT_CLASS = "CodeMirror-hint-active";
-      CodeMirror3.showHint = function(cm, getHints, options) {
+      CodeMirror4.showHint = function(cm, getHints, options) {
         if (!getHints) return cm.showHint(options);
         if (options && options.async) getHints.async = true;
         var newOpts = {
@@ -12068,7 +12406,7 @@ var require_show_hint = __commonJS({
         if (options) for (var prop in options) newOpts[prop] = options[prop];
         return cm.showHint(newOpts);
       };
-      CodeMirror3.defineExtension("showHint", function(options) {
+      CodeMirror4.defineExtension("showHint", function(options) {
         options = parseOptions(this, this.getCursor("start"), options);
         var selections = this.listSelections();
         if (selections.length > 1) return;
@@ -12079,10 +12417,10 @@ var require_show_hint = __commonJS({
         if (this.state.completionActive) this.state.completionActive.close();
         var completion = this.state.completionActive = new Completion(this, options);
         if (!completion.options.hint) return;
-        CodeMirror3.signal(this, "startCompletion", this);
+        CodeMirror4.signal(this, "startCompletion", this);
         completion.update(true);
       });
-      CodeMirror3.defineExtension("closeHint", function() {
+      CodeMirror4.defineExtension("closeHint", function() {
         if (this.state.completionActive) this.state.completionActive.close();
       });
       function Completion(cm, options) {
@@ -12112,9 +12450,9 @@ var require_show_hint = __commonJS({
           if (this.options.updateOnCursorActivity) {
             this.cm.off("cursorActivity", this.activityFunc);
           }
-          if (this.widget && this.data) CodeMirror3.signal(this.data, "close");
+          if (this.widget && this.data) CodeMirror4.signal(this.data, "close");
           if (this.widget) this.widget.close();
-          CodeMirror3.signal(this.cm, "endCompletion", this.cm);
+          CodeMirror4.signal(this.cm, "endCompletion", this.cm);
         },
         active: function() {
           return this.cm.state.completionActive == this;
@@ -12124,7 +12462,7 @@ var require_show_hint = __commonJS({
           this.cm.operation(function() {
             if (completion.hint) completion.hint(self2.cm, data, completion);
             else self2.cm.replaceRange(getText(completion), completion.from || data.from, completion.to || data.to, "complete");
-            CodeMirror3.signal(data, "pick", completion);
+            CodeMirror4.signal(data, "pick", completion);
             self2.cm.scrollIntoView();
           });
           if (this.options.closeOnPick) {
@@ -12159,7 +12497,7 @@ var require_show_hint = __commonJS({
           });
         },
         finishUpdate: function(data, first) {
-          if (this.data) CodeMirror3.signal(this.data, "update");
+          if (this.data) CodeMirror4.signal(this.data, "update");
           var picked = this.widget && this.widget.picked || first && this.options.completeSingle;
           if (this.widget) this.widget.close();
           this.data = data;
@@ -12168,7 +12506,7 @@ var require_show_hint = __commonJS({
               this.pick(data, 0);
             } else {
               this.widget = new Widget(this, data);
-              CodeMirror3.signal(data, "shown");
+              CodeMirror4.signal(data, "shown");
             }
           }
         }
@@ -12243,10 +12581,10 @@ var require_show_hint = __commonJS({
         }
         return ourMap;
       }
-      function getHintElement(hintsElement, el) {
-        while (el && el != hintsElement) {
-          if (el.nodeName.toUpperCase() === "LI" && el.parentNode == hintsElement) return el;
-          el = el.parentNode;
+      function getHintElement(hintsElement, el2) {
+        while (el2 && el2 != hintsElement) {
+          if (el2.nodeName.toUpperCase() === "LI" && el2.parentNode == hintsElement) return el2;
+          el2 = el2.parentNode;
         }
       }
       function Widget(completion, data) {
@@ -12368,21 +12706,21 @@ var require_show_hint = __commonJS({
           hints.style.top = newTop + "px";
           hints.style.left = left + startScroll.left - curScroll.left + "px";
         });
-        CodeMirror3.on(hints, "dblclick", function(e) {
-          var t = getHintElement(hints, e.target || e.srcElement);
-          if (t && t.hintId != null) {
-            widget.changeActive(t.hintId);
+        CodeMirror4.on(hints, "dblclick", function(e) {
+          var t2 = getHintElement(hints, e.target || e.srcElement);
+          if (t2 && t2.hintId != null) {
+            widget.changeActive(t2.hintId);
             widget.pick();
           }
         });
-        CodeMirror3.on(hints, "click", function(e) {
-          var t = getHintElement(hints, e.target || e.srcElement);
-          if (t && t.hintId != null) {
-            widget.changeActive(t.hintId);
+        CodeMirror4.on(hints, "click", function(e) {
+          var t2 = getHintElement(hints, e.target || e.srcElement);
+          if (t2 && t2.hintId != null) {
+            widget.changeActive(t2.hintId);
             if (completion.options.completeOnSingleClick) widget.pick();
           }
         });
-        CodeMirror3.on(hints, "mousedown", function() {
+        CodeMirror4.on(hints, "mousedown", function() {
           setTimeout(function() {
             cm.focus();
           }, 20);
@@ -12391,7 +12729,7 @@ var require_show_hint = __commonJS({
         if (selectedHintRange.from !== 0 || selectedHintRange.to !== 0) {
           this.scrollToActive();
         }
-        CodeMirror3.signal(data, "select", completions[this.selectedHint], hints.childNodes[this.selectedHint]);
+        CodeMirror4.signal(data, "select", completions[this.selectedHint], hints.childNodes[this.selectedHint]);
         return true;
       }
       Widget.prototype = {
@@ -12437,7 +12775,7 @@ var require_show_hint = __commonJS({
           node.setAttribute("aria-selected", "true");
           this.completion.cm.getInputField().setAttribute("aria-activedescendant", node.id);
           this.scrollToActive();
-          CodeMirror3.signal(this.data, "select", this.data.list[this.selectedHint], node);
+          CodeMirror4.signal(this.data, "select", this.data.list[this.selectedHint], node);
         },
         scrollToActive: function() {
           var selectedHintRange = this.getSelectedHintRange();
@@ -12492,25 +12830,25 @@ var require_show_hint = __commonJS({
           return resolved;
         } else if (words = cm.getHelper(cm.getCursor(), "hintWords")) {
           return function(cm2) {
-            return CodeMirror3.hint.fromList(cm2, {
+            return CodeMirror4.hint.fromList(cm2, {
               words
             });
           };
-        } else if (CodeMirror3.hint.anyword) {
+        } else if (CodeMirror4.hint.anyword) {
           return function(cm2, options) {
-            return CodeMirror3.hint.anyword(cm2, options);
+            return CodeMirror4.hint.anyword(cm2, options);
           };
         } else {
           return function() {
           };
         }
       }
-      CodeMirror3.registerHelper("hint", "auto", {
+      CodeMirror4.registerHelper("hint", "auto", {
         resolve: resolveAutoHints
       });
-      CodeMirror3.registerHelper("hint", "fromList", function(cm, options) {
+      CodeMirror4.registerHelper("hint", "fromList", function(cm, options) {
         var cur = cm.getCursor(), token = cm.getTokenAt(cur);
-        var term, from = CodeMirror3.Pos(cur.line, token.start), to = cur;
+        var term, from = CodeMirror4.Pos(cur.line, token.start), to = cur;
         if (token.start < cur.ch && /\w/.test(token.string.charAt(cur.ch - token.start - 1))) {
           term = token.string.substr(0, cur.ch - token.start);
         } else {
@@ -12528,9 +12866,9 @@ var require_show_hint = __commonJS({
           to
         };
       });
-      CodeMirror3.commands.autocomplete = CodeMirror3.showHint;
+      CodeMirror4.commands.autocomplete = CodeMirror4.showHint;
       var defaultOptions = {
-        hint: CodeMirror3.hint.auto,
+        hint: CodeMirror4.hint.auto,
         completeSingle: true,
         alignWithWord: true,
         closeCharacters: /[\s()\[\]{};:>,]/,
@@ -12544,697 +12882,1285 @@ var require_show_hint = __commonJS({
         paddingForScrollbar: true,
         moveOnOverlap: true
       };
-      CodeMirror3.defineOption("hintOptions", null);
+      CodeMirror4.defineOption("hintOptions", null);
     });
   }
 });
 
-// ../../../Library/Caches/deno/npm/registry.npmjs.org/codemirror/5.65.16/addon/edit/closebrackets.js
-var require_closebrackets = __commonJS({
-  "../../../Library/Caches/deno/npm/registry.npmjs.org/codemirror/5.65.16/addon/edit/closebrackets.js"(exports, module) {
-    (function(mod) {
-      if (typeof exports == "object" && typeof module == "object") mod(require_codemirror());
-      else if (typeof define == "function" && define.amd) define([
-        "../../lib/codemirror"
-      ], mod);
-      else mod(CodeMirror);
-    })(function(CodeMirror3) {
-      var defaults = {
-        pairs: `()[]{}''""`,
-        closeBefore: `)]}'":;>`,
-        triples: "",
-        explode: "[]{}"
-      };
-      var Pos = CodeMirror3.Pos;
-      CodeMirror3.defineOption("autoCloseBrackets", false, function(cm, val, old) {
-        if (old && old != CodeMirror3.Init) {
-          cm.removeKeyMap(keyMap);
-          cm.state.closeBrackets = null;
-        }
-        if (val) {
-          ensureBound(getOption(val, "pairs"));
-          cm.state.closeBrackets = val;
-          cm.addKeyMap(keyMap);
-        }
-      });
-      function getOption(conf, name) {
-        if (name == "pairs" && typeof conf == "string") return conf;
-        if (typeof conf == "object" && conf[name] != null) return conf[name];
-        return defaults[name];
-      }
-      var keyMap = {
-        Backspace: handleBackspace,
-        Enter: handleEnter
-      };
-      function ensureBound(chars) {
-        for (var i = 0; i < chars.length; i++) {
-          var ch = chars.charAt(i), key = "'" + ch + "'";
-          if (!keyMap[key]) keyMap[key] = handler(ch);
-        }
-      }
-      ensureBound(defaults.pairs + "`");
-      function handler(ch) {
-        return function(cm) {
-          return handleChar(cm, ch);
-        };
-      }
-      function getConfig(cm) {
-        var deflt = cm.state.closeBrackets;
-        if (!deflt || deflt.override) return deflt;
-        var mode = cm.getModeAt(cm.getCursor());
-        return mode.closeBrackets || deflt;
-      }
-      function handleBackspace(cm) {
-        var conf = getConfig(cm);
-        if (!conf || cm.getOption("disableInput")) return CodeMirror3.Pass;
-        var pairs = getOption(conf, "pairs");
-        var ranges = cm.listSelections();
-        for (var i = 0; i < ranges.length; i++) {
-          if (!ranges[i].empty()) return CodeMirror3.Pass;
-          var around = charsAround(cm, ranges[i].head);
-          if (!around || pairs.indexOf(around) % 2 != 0) return CodeMirror3.Pass;
-        }
-        for (var i = ranges.length - 1; i >= 0; i--) {
-          var cur = ranges[i].head;
-          cm.replaceRange("", Pos(cur.line, cur.ch - 1), Pos(cur.line, cur.ch + 1), "+delete");
-        }
-      }
-      function handleEnter(cm) {
-        var conf = getConfig(cm);
-        var explode = conf && getOption(conf, "explode");
-        if (!explode || cm.getOption("disableInput")) return CodeMirror3.Pass;
-        var ranges = cm.listSelections();
-        for (var i = 0; i < ranges.length; i++) {
-          if (!ranges[i].empty()) return CodeMirror3.Pass;
-          var around = charsAround(cm, ranges[i].head);
-          if (!around || explode.indexOf(around) % 2 != 0) return CodeMirror3.Pass;
-        }
-        cm.operation(function() {
-          var linesep = cm.lineSeparator() || "\n";
-          cm.replaceSelection(linesep + linesep, null);
-          moveSel(cm, -1);
-          ranges = cm.listSelections();
-          for (var i2 = 0; i2 < ranges.length; i2++) {
-            var line = ranges[i2].head.line;
-            cm.indentLine(line, null, true);
-            cm.indentLine(line + 1, null, true);
-          }
-        });
-      }
-      function moveSel(cm, dir) {
-        var newRanges = [], ranges = cm.listSelections(), primary = 0;
-        for (var i = 0; i < ranges.length; i++) {
-          var range = ranges[i];
-          if (range.head == cm.getCursor()) primary = i;
-          var pos = range.head.ch || dir > 0 ? {
-            line: range.head.line,
-            ch: range.head.ch + dir
-          } : {
-            line: range.head.line - 1
-          };
-          newRanges.push({
-            anchor: pos,
-            head: pos
-          });
-        }
-        cm.setSelections(newRanges, primary);
-      }
-      function contractSelection(sel) {
-        var inverted = CodeMirror3.cmpPos(sel.anchor, sel.head) > 0;
-        return {
-          anchor: new Pos(sel.anchor.line, sel.anchor.ch + (inverted ? -1 : 1)),
-          head: new Pos(sel.head.line, sel.head.ch + (inverted ? 1 : -1))
-        };
-      }
-      function handleChar(cm, ch) {
-        var conf = getConfig(cm);
-        if (!conf || cm.getOption("disableInput")) return CodeMirror3.Pass;
-        var pairs = getOption(conf, "pairs");
-        var pos = pairs.indexOf(ch);
-        if (pos == -1) return CodeMirror3.Pass;
-        var closeBefore = getOption(conf, "closeBefore");
-        var triples = getOption(conf, "triples");
-        var identical = pairs.charAt(pos + 1) == ch;
-        var ranges = cm.listSelections();
-        var opening = pos % 2 == 0;
-        var type;
-        for (var i = 0; i < ranges.length; i++) {
-          var range = ranges[i], cur = range.head, curType;
-          var next = cm.getRange(cur, Pos(cur.line, cur.ch + 1));
-          if (opening && !range.empty()) {
-            curType = "surround";
-          } else if ((identical || !opening) && next == ch) {
-            if (identical && stringStartsAfter(cm, cur)) curType = "both";
-            else if (triples.indexOf(ch) >= 0 && cm.getRange(cur, Pos(cur.line, cur.ch + 3)) == ch + ch + ch) curType = "skipThree";
-            else curType = "skip";
-          } else if (identical && cur.ch > 1 && triples.indexOf(ch) >= 0 && cm.getRange(Pos(cur.line, cur.ch - 2), cur) == ch + ch) {
-            if (cur.ch > 2 && /\bstring/.test(cm.getTokenTypeAt(Pos(cur.line, cur.ch - 2)))) return CodeMirror3.Pass;
-            curType = "addFour";
-          } else if (identical) {
-            var prev = cur.ch == 0 ? " " : cm.getRange(Pos(cur.line, cur.ch - 1), cur);
-            if (!CodeMirror3.isWordChar(next) && prev != ch && !CodeMirror3.isWordChar(prev)) curType = "both";
-            else return CodeMirror3.Pass;
-          } else if (opening && (next.length === 0 || /\s/.test(next) || closeBefore.indexOf(next) > -1)) {
-            curType = "both";
-          } else {
-            return CodeMirror3.Pass;
-          }
-          if (!type) type = curType;
-          else if (type != curType) return CodeMirror3.Pass;
-        }
-        var left = pos % 2 ? pairs.charAt(pos - 1) : ch;
-        var right = pos % 2 ? ch : pairs.charAt(pos + 1);
-        cm.operation(function() {
-          if (type == "skip") {
-            moveSel(cm, 1);
-          } else if (type == "skipThree") {
-            moveSel(cm, 3);
-          } else if (type == "surround") {
-            var sels = cm.getSelections();
-            for (var i2 = 0; i2 < sels.length; i2++) sels[i2] = left + sels[i2] + right;
-            cm.replaceSelections(sels, "around");
-            sels = cm.listSelections().slice();
-            for (var i2 = 0; i2 < sels.length; i2++) sels[i2] = contractSelection(sels[i2]);
-            cm.setSelections(sels);
-          } else if (type == "both") {
-            cm.replaceSelection(left + right, null);
-            cm.triggerElectric(left + right);
-            moveSel(cm, -1);
-          } else if (type == "addFour") {
-            cm.replaceSelection(left + left + left + left, "before");
-            moveSel(cm, 1);
-          }
-        });
-      }
-      function charsAround(cm, pos) {
-        var str = cm.getRange(Pos(pos.line, pos.ch - 1), Pos(pos.line, pos.ch + 1));
-        return str.length == 2 ? str : null;
-      }
-      function stringStartsAfter(cm, pos) {
-        var token = cm.getTokenAt(Pos(pos.line, pos.ch + 1));
-        return /\bstring/.test(token.type) && token.start == pos.ch && (pos.ch == 0 || !/\bstring/.test(cm.getTokenTypeAt(pos)));
-      }
-    });
+// src/i18n.ts
+var translations = {
+  ko: {
+    tab_explorer: "\uD0ED",
+    search_placeholder: "\uD0ED \uAC80\uC0C9",
+    search_in: "\uAC80\uC0C9 \uB300\uC0C1",
+    regex_title: "\uC815\uADDC\uC2DD",
+    field_all: "\uC81C\uBAA9 + URL",
+    field_title: "\uC81C\uBAA9",
+    field_url: "URL",
+    field_host: "\uB3C4\uBA54\uC778",
+    refresh: "\uC0C8\uB85C\uACE0\uCE68",
+    console_toggle: "\uCF58\uC194 (Ctrl+`)",
+    help: "\uB3C4\uC6C0\uB9D0 (?)",
+    settings: "\uC124\uC815",
+    preset_all: "\uC804\uCCB4",
+    preset_duplicates: "\uC911\uBCF5",
+    preset_stale: "24\uC2DC\uAC04 \uBBF8\uC0AC\uC6A9",
+    preset_audible: "\uC18C\uB9AC \uC7AC\uC0DD \uC911",
+    preset_discarded: "\uC5B8\uB85C\uB4DC\uB428",
+    save_preset: "\uD604\uC7AC \uBCF4\uAE30\uB97C \uC800\uC7A5",
+    preset_name: "\uBCF4\uAE30 \uC774\uB984:",
+    delete_preset: "\u2018{name}\u2019 \uBCF4\uAE30\uB97C \uC0AD\uC81C\uD560\uAE4C\uC694?",
+    preset_delete_hint: "\uC6B0\uD074\uB9AD: \uC0AD\uC81C",
+    scope: "\uCC3D",
+    scope_all: "\uBAA8\uB4E0 \uCC3D",
+    scope_current: "\uC774 \uCC3D",
+    state: "\uC0C1\uD0DC",
+    state_all: "\uC804\uCCB4",
+    state_active: "\uD65C\uC131",
+    state_inactive: "\uBE44\uD65C\uC131",
+    state_pinned: "\uACE0\uC815\uB428",
+    state_unpinned: "\uACE0\uC815 \uC548 \uB428",
+    state_audible: "\uC18C\uB9AC \uC7AC\uC0DD \uC911",
+    state_muted: "\uC74C\uC18C\uAC70",
+    state_discarded: "\uC5B8\uB85C\uB4DC\uB428",
+    state_loading: "\uB85C\uB529 \uC911",
+    state_complete: "\uB85C\uB4DC\uB428",
+    accessed: "\uB9C8\uC9C0\uB9C9 \uC0AC\uC6A9",
+    accessed_all: "\uC804\uCCB4",
+    accessed_lt5m: "5\uBD84 \uC774\uB0B4",
+    accessed_lt1h: "1\uC2DC\uAC04 \uC774\uB0B4",
+    accessed_lt24h: "24\uC2DC\uAC04 \uC774\uB0B4",
+    accessed_gt24h: "24\uC2DC\uAC04 \uC774\uC804",
+    accessed_gt7d: "7\uC77C \uC774\uC804",
+    accessed_gt30d: "30\uC77C \uC774\uC804",
+    accessed_never: "\uAE30\uB85D \uC5C6\uC74C",
+    ignore_pinned: "\uACE0\uC815 \uD0ED \uC228\uAE30\uAE30",
+    ignore_pinned_desc: "\uACE0\uC815 \uD0ED\uC744 \uBAA9\uB85D\uACFC \uC77C\uAD04 \uC791\uC5C5\uC5D0\uC11C \uBE8D\uB2C8\uB2E4",
+    sort: "\uC815\uB82C",
+    sort_recent: "\uCD5C\uADFC \uC0AC\uC6A9\uC21C",
+    sort_old: "\uC624\uB798\uB41C \uC0AC\uC6A9\uC21C",
+    sort_state: "\uC0C1\uD0DC",
+    sort_domain: "\uB3C4\uBA54\uC778",
+    sort_title: "\uC81C\uBAA9",
+    sort_window: "\uD0ED \uC21C\uC11C",
+    group_by: "\uBB36\uAE30",
+    group_none: "\uC548 \uD568",
+    group_domain: "\uB3C4\uBA54\uC778",
+    group_window: "\uCC3D",
+    group_state: "\uC0C1\uD0DC",
+    group_sort: "\uBB36\uC74C \uC21C\uC11C",
+    group_sort_name: "\uC774\uB984",
+    group_sort_count_desc: "\uD0ED \uB9CE\uC740 \uC21C",
+    group_sort_count_asc: "\uD0ED \uC801\uC740 \uC21C",
+    group_sort_recent: "\uCD5C\uADFC \uC0AC\uC6A9\uC21C",
+    group_sort_old: "\uC624\uB798\uB41C \uC0AC\uC6A9\uC21C",
+    select_all: "\uBAA9\uB85D \uC804\uCCB4 \uC120\uD0DD",
+    list_count: "\uD0ED {shown}\uAC1C",
+    list_count_filtered: "\uD0ED {shown}\uAC1C / \uC804\uCCB4 {total}\uAC1C",
+    close_all: "{count}\uAC1C \uBAA8\uB450 \uB2EB\uAE30",
+    close_shown_desc: "\uC120\uD0DD\uACFC \uAD00\uACC4\uC5C6\uC774 \uC9C0\uAE08 \uBAA9\uB85D\uC5D0 \uC788\uB294 \uD0ED\uC744 \uBAA8\uB450 \uB2EB\uC2B5\uB2C8\uB2E4",
+    selected_count: "{count}\uAC1C \uC120\uD0DD",
+    close_selected: "\uB2EB\uAE30",
+    close_selected_desc: "\uC120\uD0DD\uD55C \uD0ED\uB9CC \uB2EB\uC2B5\uB2C8\uB2E4",
+    discard: "\uC5B8\uB85C\uB4DC",
+    reload: "\uC0C8\uB85C\uACE0\uCE68",
+    pin: "\uACE0\uC815",
+    unpin: "\uACE0\uC815 \uD574\uC81C",
+    mute: "\uC74C\uC18C\uAC70",
+    unmute: "\uC74C\uC18C\uAC70 \uD574\uC81C",
+    clear_selection: "\uC120\uD0DD \uD574\uC81C",
+    console: "\uCF58\uC194",
+    sync_query: "\uD544\uD130 \uBD88\uB7EC\uC624\uAE30",
+    sync_query_title: "\uC9C0\uAE08 \uD544\uD130\uB97C ui.query(...) \uCF54\uB4DC\uB85C \uD3B8\uC9D1\uAE30\uC5D0 \uB123\uC2B5\uB2C8\uB2E4",
+    clear: "\uC9C0\uC6B0\uAE30",
+    hide_console: "\uCF58\uC194 \uB2EB\uAE30",
+    editor_shortcuts: "Ctrl+Enter \uC2E4\uD589 \xB7 Ctrl+Space \uC790\uB3D9\uC644\uC131 \xB7 Alt+\u2191\u2193 \uAE30\uB85D",
+    run: "\uC2E4\uD589",
+    status_keys: "/ \uAC80\uC0C9 \xB7 j k \uC774\uB3D9 \xB7 x \uC120\uD0DD \xB7 Shift \uBC94\uC704 \uC120\uD0DD \xB7 \u21B5 \uC5F4\uAE30 \xB7 d \uB2EB\uAE30 \xB7 ? \uB3C4\uC6C0\uB9D0",
+    linked: "\uD544\uD130\uC640 \uC5F0\uB3D9 \uC911",
+    edited: "\uC9C1\uC811 \uC218\uC815\uD568, \uD544\uD130 \uC5F0\uB3D9 \uBA48\uCDA4",
+    ready: "\uC900\uBE44\uB428",
+    running: "\uC2E4\uD589 \uC911\u2026",
+    completed: "\uC644\uB8CC",
+    error: "\uC624\uB958",
+    refresh_failed: "\uC0C8\uB85C\uACE0\uCE68 \uC2E4\uD328",
+    no_match: "\uC870\uAC74\uC5D0 \uB9DE\uB294 \uD0ED\uC774 \uC5C6\uC2B5\uB2C8\uB2E4",
+    shown_total: "{shown}\uAC1C \uD45C\uC2DC \xB7 \uC804\uCCB4 {total}\uAC1C",
+    group_count: "{count}",
+    now: "\uBC29\uAE08",
+    min: "{count}\uBD84",
+    hour: "{count}\uC2DC\uAC04",
+    day: "{count}\uC77C",
+    untitled: "(\uC81C\uBAA9 \uC5C6\uC74C)",
+    active: "\uD65C\uC131",
+    pinned: "\uACE0\uC815",
+    audio: "\uC18C\uB9AC",
+    muted: "\uC74C\uC18C\uAC70",
+    discarded_state: "\uC5B8\uB85C\uB4DC",
+    loading: "\uB85C\uB529",
+    complete: "\uB85C\uB4DC\uB428",
+    activate_tab: "\uC774 \uD0ED\uC73C\uB85C \uC774\uB3D9 (Enter)",
+    close_tab: "\uD0ED \uB2EB\uAE30 (d)",
+    close_shown_confirm: "\uBAA9\uB85D\uC758 \uD0ED {count}\uAC1C\uB97C \uBAA8\uB450 \uB2EB\uC744\uAE4C\uC694?",
+    close_selected_confirm: "\uC120\uD0DD\uD55C \uD0ED {count}\uAC1C\uB97C \uB2EB\uC744\uAE4C\uC694?",
+    close_one_confirm: "\u2018{title}\u2019 \uD0ED\uC744 \uB2EB\uC744\uAE4C\uC694?",
+    reset_confirm: "\uD544\uD130, \uC800\uC7A5\uD55C \uBCF4\uAE30, \uC124\uC815, \uCF58\uC194 \uAE30\uB85D\uC744 \uCD08\uAE30\uD654\uD560\uAE4C\uC694?",
+    ready_console: "\uD0ED {count}\uAC1C. $tabs, $selected, $_, browser.* \uB97C \uC4F8 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    errors: "\uC624\uB958 {count}\uAC1C",
+    rows: "{count}\uD589",
+    first100: "\uCC98\uC74C 100\uD589",
+    window_group: "\uCC3D {id}",
+    no_domain: "\uB3C4\uBA54\uC778 \uC5C6\uC74C",
+    state_group: "{state}",
+    help_title: "\uB3C4\uC6C0\uB9D0",
+    help_keys: "\uD0A4\uBCF4\uB4DC",
+    key_search: "\uAC80\uC0C9",
+    key_escape: "\uAC80\uC0C9\uC5B4 \uC9C0\uC6B0\uAE30, \uD55C \uBC88 \uB354 \uB204\uB974\uBA74 \uBAA9\uB85D\uC73C\uB85C",
+    key_down: "\uB2E4\uC74C \uD0ED",
+    key_up: "\uC774\uC804 \uD0ED",
+    key_select: "\uC120\uD0DD / \uD574\uC81C (Shift+j/k, Shift+\uD074\uB9AD\uC73C\uB85C \uBC94\uC704)",
+    key_open: "\uADF8 \uD0ED\uC73C\uB85C \uC774\uB3D9",
+    key_close: "\uD0ED \uB2EB\uAE30",
+    key_console: "\uCF58\uC194 \uC5F4\uAE30 / \uB2EB\uAE30",
+    key_first: "\uCCAB \uD0ED (G: \uB9C8\uC9C0\uB9C9 \uD0ED)",
+    key_select_all: "\uBAA9\uB85D\uC758 \uD0ED \uBAA8\uB450 \uC120\uD0DD",
+    key_clear: "\uC120\uD0DD \uD574\uC81C",
+    views: "\uBCF4\uAE30",
+    filters: "\uD544\uD130",
+    close: "\uB2EB\uAE30",
+    help_title_repl: "\uCF58\uC194",
+    help_tabs: "\uBAA9\uB85D\uC5D0 \uC788\uB294 \uD0ED",
+    help_selected: "\uC120\uD0DD\uD55C \uD0ED",
+    help_last: "\uC9C1\uC804 \uACB0\uACFC",
+    help_query: "\uD544\uD130\uB97C \uBC14\uAFB8\uACE0 \uBAA9\uB85D\uC744 \uB3CC\uB824\uC90C",
+    help_close: "\uBAA9\uB85D\uC758 \uD0ED\uC744 \uBAA8\uB450 \uB2EB\uAE30",
+    help_table: "\uD45C\uB85C \uCD9C\uB825",
+    help_raw: "Firefox WebExtension API",
+    confirm_close: "\uD0ED \uB2EB\uAE30 \uC804\uC5D0 \uBB3B\uAE30",
+    hide_self: "\uC774 \uD398\uC774\uC9C0\uB97C \uBAA9\uB85D\uC5D0\uC11C \uC228\uAE30\uAE30",
+    auto_refresh: "\uD0ED\uC774 \uBC14\uB00C\uBA74 \uBC14\uB85C \uBC18\uC601",
+    theme: "\uD14C\uB9C8",
+    theme_system: "\uC2DC\uC2A4\uD15C \uC124\uC815",
+    theme_light: "\uB77C\uC774\uD2B8",
+    theme_dark: "\uB2E4\uD06C",
+    language: "\uC5B8\uC5B4",
+    reset: "\uC800\uC7A5\uD55C \uC0C1\uD0DC \uCD08\uAE30\uD654",
+    done: "\uC644\uB8CC"
+  },
+  en: {
+    tab_explorer: "Tabs",
+    search_placeholder: "Search tabs",
+    search_in: "Search in",
+    regex_title: "Regular expression",
+    field_all: "Title + URL",
+    field_title: "Title",
+    field_url: "URL",
+    field_host: "Domain",
+    refresh: "Refresh",
+    console_toggle: "Console (Ctrl+`)",
+    help: "Help (?)",
+    settings: "Settings",
+    preset_all: "All",
+    preset_duplicates: "Duplicates",
+    preset_stale: "Unused 24 h",
+    preset_audible: "Playing",
+    preset_discarded: "Unloaded",
+    save_preset: "Save current view",
+    preset_name: "View name:",
+    delete_preset: "Delete the view \u2018{name}\u2019?",
+    preset_delete_hint: "right-click: delete",
+    scope: "Window",
+    scope_all: "All windows",
+    scope_current: "This window",
+    state: "State",
+    state_all: "Any",
+    state_active: "Active",
+    state_inactive: "Inactive",
+    state_pinned: "Pinned",
+    state_unpinned: "Unpinned",
+    state_audible: "Playing audio",
+    state_muted: "Muted",
+    state_discarded: "Unloaded",
+    state_loading: "Loading",
+    state_complete: "Loaded",
+    accessed: "Last used",
+    accessed_all: "Any time",
+    accessed_lt5m: "Within 5 min",
+    accessed_lt1h: "Within 1 h",
+    accessed_lt24h: "Within 24 h",
+    accessed_gt24h: "Over 24 h ago",
+    accessed_gt7d: "Over 7 d ago",
+    accessed_gt30d: "Over 30 d ago",
+    accessed_never: "Unknown",
+    ignore_pinned: "Hide pinned",
+    ignore_pinned_desc: "Pinned tabs are left out of the list and bulk actions",
+    sort: "Sort",
+    sort_recent: "Recently used",
+    sort_old: "Least recently used",
+    sort_state: "State",
+    sort_domain: "Domain",
+    sort_title: "Title",
+    sort_window: "Tab order",
+    group_by: "Group",
+    group_none: "None",
+    group_domain: "Domain",
+    group_window: "Window",
+    group_state: "State",
+    group_sort: "Groups by",
+    group_sort_name: "Name",
+    group_sort_count_desc: "Most tabs",
+    group_sort_count_asc: "Fewest tabs",
+    group_sort_recent: "Recently used",
+    group_sort_old: "Least recently used",
+    select_all: "Select all in list",
+    list_count: "{shown} tabs",
+    list_count_filtered: "{shown} of {total} tabs",
+    close_all: "Close all {count}",
+    close_shown_desc: "Closes every tab in the list, selected or not",
+    selected_count: "{count} selected",
+    close_selected: "Close",
+    close_selected_desc: "Closes only the selected tabs",
+    discard: "Unload",
+    reload: "Reload",
+    pin: "Pin",
+    unpin: "Unpin",
+    mute: "Mute",
+    unmute: "Unmute",
+    clear_selection: "Clear",
+    console: "Console",
+    sync_query: "Load filters",
+    sync_query_title: "Put the current filters into the editor as ui.query(...)",
+    clear: "Clear",
+    hide_console: "Close console",
+    editor_shortcuts: "Ctrl+Enter run \xB7 Ctrl+Space complete \xB7 Alt+\u2191\u2193 history",
+    run: "Run",
+    status_keys: "/ search \xB7 j k move \xB7 x select \xB7 Shift range \xB7 \u21B5 open \xB7 d close \xB7 ? help",
+    linked: "Following filters",
+    edited: "Edited, not following filters",
+    ready: "Ready",
+    running: "Running\u2026",
+    completed: "Done",
+    error: "Error",
+    refresh_failed: "Refresh failed",
+    no_match: "No tabs match",
+    shown_total: "{shown} shown \xB7 {total} total",
+    group_count: "{count}",
+    now: "now",
+    min: "{count} min",
+    hour: "{count} h",
+    day: "{count} d",
+    untitled: "(untitled)",
+    active: "active",
+    pinned: "pinned",
+    audio: "audio",
+    muted: "muted",
+    discarded_state: "unloaded",
+    loading: "loading",
+    complete: "loaded",
+    activate_tab: "Switch to tab (Enter)",
+    close_tab: "Close tab (d)",
+    close_shown_confirm: "Close all {count} tabs in the list?",
+    close_selected_confirm: "Close {count} selected tabs?",
+    close_one_confirm: "Close \u2018{title}\u2019?",
+    reset_confirm: "Reset filters, saved views, settings and console history?",
+    ready_console: "{count} tabs. Use $tabs, $selected, $_ or browser.*",
+    errors: "{count} errors",
+    rows: "{count} rows",
+    first100: "first 100 shown",
+    window_group: "Window {id}",
+    no_domain: "No domain",
+    state_group: "{state}",
+    help_title: "Help",
+    help_keys: "Keyboard",
+    key_search: "Search",
+    key_escape: "Clear search, press again to leave it",
+    key_down: "Next tab",
+    key_up: "Previous tab",
+    key_select: "Select / unselect (Shift+j/k or Shift+click for a range)",
+    key_open: "Switch to that tab",
+    key_close: "Close tab",
+    key_console: "Open / close console",
+    key_first: "First tab (G: last tab)",
+    key_select_all: "Select every tab in the list",
+    key_clear: "Clear selection",
+    views: "Views",
+    filters: "Filters",
+    close: "Close",
+    help_title_repl: "Console",
+    help_tabs: "Tabs in the list",
+    help_selected: "Selected tabs",
+    help_last: "Last result",
+    help_query: "Set filters and return the list",
+    help_close: "Close every tab in the list",
+    help_table: "Print a table",
+    help_raw: "Firefox WebExtension API",
+    confirm_close: "Ask before closing tabs",
+    hide_self: "Hide this page from the list",
+    auto_refresh: "Update when tabs change",
+    theme: "Theme",
+    theme_system: "System",
+    theme_light: "Light",
+    theme_dark: "Dark",
+    language: "Language",
+    reset: "Reset saved state",
+    done: "Done"
   }
-});
-
-// ../../../Library/Caches/deno/npm/registry.npmjs.org/codemirror/5.65.16/addon/edit/matchbrackets.js
-var require_matchbrackets = __commonJS({
-  "../../../Library/Caches/deno/npm/registry.npmjs.org/codemirror/5.65.16/addon/edit/matchbrackets.js"(exports, module) {
-    (function(mod) {
-      if (typeof exports == "object" && typeof module == "object") mod(require_codemirror());
-      else if (typeof define == "function" && define.amd) define([
-        "../../lib/codemirror"
-      ], mod);
-      else mod(CodeMirror);
-    })(function(CodeMirror3) {
-      var ie_lt8 = /MSIE \d/.test(navigator.userAgent) && (document.documentMode == null || document.documentMode < 8);
-      var Pos = CodeMirror3.Pos;
-      var matching = {
-        "(": ")>",
-        ")": "(<",
-        "[": "]>",
-        "]": "[<",
-        "{": "}>",
-        "}": "{<",
-        "<": ">>",
-        ">": "<<"
-      };
-      function bracketRegex(config) {
-        return config && config.bracketRegex || /[(){}[\]]/;
-      }
-      function findMatchingBracket(cm, where, config) {
-        var line = cm.getLineHandle(where.line), pos = where.ch - 1;
-        var afterCursor = config && config.afterCursor;
-        if (afterCursor == null) afterCursor = /(^| )cm-fat-cursor($| )/.test(cm.getWrapperElement().className);
-        var re = bracketRegex(config);
-        var match = !afterCursor && pos >= 0 && re.test(line.text.charAt(pos)) && matching[line.text.charAt(pos)] || re.test(line.text.charAt(pos + 1)) && matching[line.text.charAt(++pos)];
-        if (!match) return null;
-        var dir = match.charAt(1) == ">" ? 1 : -1;
-        if (config && config.strict && dir > 0 != (pos == where.ch)) return null;
-        var style = cm.getTokenTypeAt(Pos(where.line, pos + 1));
-        var found = scanForBracket(cm, Pos(where.line, pos + (dir > 0 ? 1 : 0)), dir, style, config);
-        if (found == null) return null;
-        return {
-          from: Pos(where.line, pos),
-          to: found && found.pos,
-          match: found && found.ch == match.charAt(0),
-          forward: dir > 0
-        };
-      }
-      function scanForBracket(cm, where, dir, style, config) {
-        var maxScanLen = config && config.maxScanLineLength || 1e4;
-        var maxScanLines = config && config.maxScanLines || 1e3;
-        var stack = [];
-        var re = bracketRegex(config);
-        var lineEnd = dir > 0 ? Math.min(where.line + maxScanLines, cm.lastLine() + 1) : Math.max(cm.firstLine() - 1, where.line - maxScanLines);
-        for (var lineNo = where.line; lineNo != lineEnd; lineNo += dir) {
-          var line = cm.getLine(lineNo);
-          if (!line) continue;
-          var pos = dir > 0 ? 0 : line.length - 1, end = dir > 0 ? line.length : -1;
-          if (line.length > maxScanLen) continue;
-          if (lineNo == where.line) pos = where.ch - (dir < 0 ? 1 : 0);
-          for (; pos != end; pos += dir) {
-            var ch = line.charAt(pos);
-            if (re.test(ch) && (style === void 0 || (cm.getTokenTypeAt(Pos(lineNo, pos + 1)) || "") == (style || ""))) {
-              var match = matching[ch];
-              if (match && match.charAt(1) == ">" == dir > 0) stack.push(ch);
-              else if (!stack.length) return {
-                pos: Pos(lineNo, pos),
-                ch
-              };
-              else stack.pop();
-            }
-          }
-        }
-        return lineNo - dir == (dir > 0 ? cm.lastLine() : cm.firstLine()) ? false : null;
-      }
-      function matchBrackets(cm, autoclear, config) {
-        var maxHighlightLen = cm.state.matchBrackets.maxHighlightLineLength || 1e3, highlightNonMatching = config && config.highlightNonMatching;
-        var marks = [], ranges = cm.listSelections();
-        for (var i = 0; i < ranges.length; i++) {
-          var match = ranges[i].empty() && findMatchingBracket(cm, ranges[i].head, config);
-          if (match && (match.match || highlightNonMatching !== false) && cm.getLine(match.from.line).length <= maxHighlightLen) {
-            var style = match.match ? "CodeMirror-matchingbracket" : "CodeMirror-nonmatchingbracket";
-            marks.push(cm.markText(match.from, Pos(match.from.line, match.from.ch + 1), {
-              className: style
-            }));
-            if (match.to && cm.getLine(match.to.line).length <= maxHighlightLen) marks.push(cm.markText(match.to, Pos(match.to.line, match.to.ch + 1), {
-              className: style
-            }));
-          }
-        }
-        if (marks.length) {
-          if (ie_lt8 && cm.state.focused) cm.focus();
-          var clear = function() {
-            cm.operation(function() {
-              for (var i2 = 0; i2 < marks.length; i2++) marks[i2].clear();
-            });
-          };
-          if (autoclear) setTimeout(clear, 800);
-          else return clear;
-        }
-      }
-      function doMatchBrackets(cm) {
-        cm.operation(function() {
-          if (cm.state.matchBrackets.currentlyHighlighted) {
-            cm.state.matchBrackets.currentlyHighlighted();
-            cm.state.matchBrackets.currentlyHighlighted = null;
-          }
-          cm.state.matchBrackets.currentlyHighlighted = matchBrackets(cm, false, cm.state.matchBrackets);
-        });
-      }
-      function clearHighlighted(cm) {
-        if (cm.state.matchBrackets && cm.state.matchBrackets.currentlyHighlighted) {
-          cm.state.matchBrackets.currentlyHighlighted();
-          cm.state.matchBrackets.currentlyHighlighted = null;
-        }
-      }
-      CodeMirror3.defineOption("matchBrackets", false, function(cm, val, old) {
-        if (old && old != CodeMirror3.Init) {
-          cm.off("cursorActivity", doMatchBrackets);
-          cm.off("focus", doMatchBrackets);
-          cm.off("blur", clearHighlighted);
-          clearHighlighted(cm);
-        }
-        if (val) {
-          cm.state.matchBrackets = typeof val == "object" ? val : {};
-          cm.on("cursorActivity", doMatchBrackets);
-          cm.on("focus", doMatchBrackets);
-          cm.on("blur", clearHighlighted);
-        }
-      });
-      CodeMirror3.defineExtension("matchBrackets", function() {
-        matchBrackets(this, true);
-      });
-      CodeMirror3.defineExtension("findMatchingBracket", function(pos, config, oldConfig) {
-        if (oldConfig || typeof config == "boolean") {
-          if (!oldConfig) {
-            config = config ? {
-              strict: true
-            } : null;
-          } else {
-            oldConfig.strict = config;
-            config = oldConfig;
-          }
-        }
-        return findMatchingBracket(this, pos, config);
-      });
-      CodeMirror3.defineExtension("scanForBracket", function(pos, dir, style, config) {
-        return scanForBracket(this, pos, dir, style, config);
-      });
-    });
+};
+translations.ko;
+function detectLanguage() {
+  const languages = navigator.languages?.length ? navigator.languages : [
+    navigator.language || ""
+  ];
+  return languages.some((x) => String(x).toLowerCase().startsWith("ko")) ? "ko" : "en";
+}
+function translate(language, key, vars = {}) {
+  let value = translations[language]?.[key] ?? translations.en[key] ?? key;
+  for (const [name, replacement] of Object.entries(vars)) {
+    value = value.replaceAll(`{${name}}`, String(replacement));
   }
-});
+  return value;
+}
 
-// src/app.ts
-var import_codemirror = __toESM(require_codemirror());
+// src/storage.ts
+var STORAGE_KEYS = {
+  settings: "tabConsole.settings",
+  presets: "tabConsole.presets",
+  history: "tabConsole.history",
+  ui: "tabConsole.ui"
+};
+function read(key, fallback) {
+  try {
+    const text = localStorage.getItem(key);
+    if (text == null || text === "") return fallback;
+    return JSON.parse(text) ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+function write(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+  }
+}
+var storage = {
+  settings: (defaults) => ({
+    ...defaults,
+    ...read(STORAGE_KEYS.settings, {})
+  }),
+  saveSettings: (settings) => write(STORAGE_KEYS.settings, settings),
+  presets: () => read(STORAGE_KEYS.presets, []),
+  savePresets: (presets) => write(STORAGE_KEYS.presets, presets),
+  history: () => read(STORAGE_KEYS.history, []),
+  saveHistory: (history) => write(STORAGE_KEYS.history, history),
+  ui: () => read(STORAGE_KEYS.ui, {}),
+  saveUi: (ui2) => write(STORAGE_KEYS.ui, {
+    ...read(STORAGE_KEYS.ui, {}),
+    ...ui2
+  }),
+  clear: () => Object.values(STORAGE_KEYS).forEach((key) => localStorage.removeItem(key))
+};
+
+// src/state.ts
+var DEFAULT_SETTINGS = {
+  confirmClose: true,
+  hideSelf: true,
+  autoRefresh: true,
+  theme: "system",
+  language: detectLanguage()
+};
+var savedUi = storage.ui();
+var state = {
+  allTabs: [],
+  filteredTabs: [],
+  selectedIds: /* @__PURE__ */ new Set(),
+  currentWindowId: null,
+  activePreset: "all",
+  customPresets: storage.presets(),
+  settings: storage.settings(DEFAULT_SETTINGS),
+  // The list is the main view; the console opens on demand (Ctrl+`).
+  consoleHidden: savedUi.consoleHidden ?? true,
+  consoleHeight: savedUi.consoleHeight || 300,
+  /** Row the keyboard acts on. */
+  focusedId: null,
+  /** Where the next Shift+click or Shift+j/k range starts. */
+  anchorId: null,
+  /** Selection before the current Shift+j/k range began; null when no range is being extended. */
+  rangeBase: null
+};
+var t = (key, vars) => translate(state.settings.language, key, vars);
+function $(id) {
+  const el2 = document.getElementById(id);
+  if (!el2) throw new Error(`#${id} is missing from console.html`);
+  return el2;
+}
+var selectedTabs = () => state.allTabs.filter((tab) => state.selectedIds.has(tab.id));
+function setStatus(text) {
+  $("statusText").textContent = text;
+}
+
+// src/explorer/controls.ts
+var SELECT_IDS = {
+  field: "fieldSelect",
+  scope: "scopeSelect",
+  state: "stateFilter",
+  accessed: "accessedFilter",
+  sort: "sortSelect",
+  groupBy: "groupBySelect",
+  groupSort: "groupSortSelect"
+};
+var CHECKBOX_IDS = {
+  regex: "regexToggle",
+  ignorePinned: "ignorePinnedToggle"
+};
+var select = (key) => $(SELECT_IDS[key]);
+var checkbox = (key) => $(CHECKBOX_IDS[key]);
+var searchInput = () => $("searchInput");
+function readFilters() {
+  return {
+    search: searchInput().value,
+    regex: checkbox("regex").checked,
+    field: select("field").value,
+    scope: select("scope").value,
+    state: select("state").value,
+    accessed: select("accessed").value,
+    sort: select("sort").value,
+    groupBy: select("groupBy").value,
+    groupSort: select("groupSort").value,
+    ignorePinned: checkbox("ignorePinned").checked,
+    preset: state.activePreset
+  };
+}
+function setPreset(name) {
+  state.activePreset = name || "all";
+  document.querySelectorAll(".preset[data-preset]").forEach((btn) => btn.classList.toggle("active", btn.dataset.preset === state.activePreset));
+}
+function writeFilters(options) {
+  if (options.search !== void 0) searchInput().value = String(options.search);
+  for (const [key, id] of Object.entries(SELECT_IDS)) {
+    const value = options[key];
+    if (value !== void 0) $(id).value = value;
+  }
+  for (const [key, id] of Object.entries(CHECKBOX_IDS)) {
+    const value = options[key];
+    if (value !== void 0) $(id).checked = !!value;
+  }
+  if (options.preset !== void 0) setPreset(options.preset);
+}
+
+// src/tabs/filters.ts
+var DEFAULT_FILTERS = Object.freeze({
+  search: "",
+  regex: false,
+  field: "all",
+  scope: "all",
+  state: "all",
+  accessed: "all",
+  sort: "recent",
+  groupBy: "none",
+  groupSort: "name",
+  ignorePinned: false,
+  preset: "all"
+});
+function nonDefaultFilters(options) {
+  return Object.fromEntries(Object.entries(options).filter(([key, value]) => value !== DEFAULT_FILTERS[key]));
+}
+var MINUTE = 6e4;
+var HOUR = 60 * MINUTE;
+var DAY = 24 * HOUR;
+function rawUrl(tabOrUrl) {
+  return typeof tabOrUrl === "string" ? tabOrUrl : tabOrUrl?.url || "";
+}
+function hostname(tabOrUrl) {
+  try {
+    return new URL(rawUrl(tabOrUrl)).hostname;
+  } catch {
+    return "";
+  }
+}
+function normalizeUrl(tabOrUrl) {
+  const raw = rawUrl(tabOrUrl);
+  try {
+    const u = new URL(raw);
+    u.hash = "";
+    if (u.pathname.length > 1) u.pathname = u.pathname.replace(/\/+$/, "");
+    return u.toString();
+  } catch {
+    return raw.replace(/#.*$/, "").replace(/\/+$/, "");
+  }
+}
+function primaryState(tab) {
+  if (tab.active) return "active";
+  if (tab.pinned) return "pinned";
+  if (tab.audible) return "audible";
+  if (tab.mutedInfo?.muted) return "muted";
+  if (tab.discarded) return "discarded";
+  if (tab.status === "loading") return "loading";
+  return "complete";
+}
+var STATE_RANK = {
+  active: 0,
+  pinned: 1,
+  audible: 2,
+  muted: 3,
+  loading: 4,
+  complete: 5,
+  discarded: 6
+};
+var STATE_MATCHERS = {
+  all: () => true,
+  active: (tab) => !!tab.active,
+  inactive: (tab) => !tab.active,
+  pinned: (tab) => !!tab.pinned,
+  unpinned: (tab) => !tab.pinned,
+  audible: (tab) => !!tab.audible,
+  muted: (tab) => !!tab.mutedInfo?.muted,
+  discarded: (tab) => !!tab.discarded,
+  loading: (tab) => tab.status === "loading",
+  complete: (tab) => tab.status === "complete" && !tab.discarded
+};
+function matchesState(tab, filter) {
+  return (STATE_MATCHERS[filter] ?? STATE_MATCHERS.all)(tab);
+}
+function matchesAccessed(tab, filter, now = Date.now()) {
+  if (filter === "all") return true;
+  const ts = Number(tab.lastAccessed || 0);
+  if (filter === "never") return !ts;
+  if (!ts) return false;
+  const age = now - ts;
+  switch (filter) {
+    case "lt5m":
+      return age <= 5 * MINUTE;
+    case "lt1h":
+      return age <= HOUR;
+    case "lt24h":
+      return age <= DAY;
+    case "gt24h":
+      return age > DAY;
+    case "gt7d":
+      return age > 7 * DAY;
+    case "gt30d":
+      return age > 30 * DAY;
+    default:
+      return true;
+  }
+}
+function hostIs(tab, domain) {
+  const h = hostname(tab);
+  return h === domain || h.endsWith(`.${domain}`);
+}
+function duplicateUrls(tabs) {
+  const counts = /* @__PURE__ */ new Map();
+  for (const tab of tabs) {
+    const key = normalizeUrl(tab);
+    if (key) counts.set(key, (counts.get(key) || 0) + 1);
+  }
+  return new Set([
+    ...counts
+  ].filter(([, count]) => count > 1).map(([key]) => key));
+}
+function presetPredicate(name, tabs, now = Date.now()) {
+  switch (name) {
+    case "duplicates": {
+      const duplicates = duplicateUrls(tabs);
+      return (tab) => duplicates.has(normalizeUrl(tab));
+    }
+    case "audible":
+      return (tab) => !!tab.audible;
+    case "pinned":
+      return (tab) => !!tab.pinned;
+    case "discarded":
+      return (tab) => !!tab.discarded;
+    case "stale24":
+      return (tab) => !!tab.lastAccessed && tab.lastAccessed < now - DAY;
+    case "linear":
+      return (tab) => hostIs(tab, "linear.app");
+    case "github":
+      return (tab) => hostIs(tab, "github.com");
+    default:
+      return () => true;
+  }
+}
+function searchText(tab, field) {
+  if (field === "title") return tab.title || "";
+  if (field === "url") return tab.url || "";
+  if (field === "host") return hostname(tab);
+  return `${tab.title || ""}
+${tab.url || ""}`;
+}
+function searchMatcher(search, regex) {
+  if (!search) return null;
+  if (regex) {
+    const re = new RegExp(search, "i");
+    return (value) => re.test(value);
+  }
+  const needle = search.toLowerCase();
+  return (value) => value.toLowerCase().includes(needle);
+}
+var byAccessDesc = (a, b) => (b.lastAccessed || 0) - (a.lastAccessed || 0);
+var byTitle = (a, b) => (a.title || "").localeCompare(b.title || "");
+var TAB_COMPARATORS = {
+  recent: byAccessDesc,
+  old: (a, b) => (a.lastAccessed || 0) - (b.lastAccessed || 0),
+  state: (a, b) => STATE_RANK[primaryState(a)] - STATE_RANK[primaryState(b)] || byAccessDesc(a, b),
+  domain: (a, b) => hostname(a).localeCompare(hostname(b)) || byTitle(a, b),
+  title: byTitle,
+  window: (a, b) => a.windowId - b.windowId || a.index - b.index
+};
+function sortTabs(tabs, sort) {
+  return tabs.sort(TAB_COMPARATORS[sort] ?? TAB_COMPARATORS.recent);
+}
+function filterTabs(all, options, context) {
+  const now = context.now ?? Date.now();
+  const matcher = searchMatcher(options.search, options.regex);
+  const base = all.filter((tab) => {
+    if (context.hiddenUrl && tab.url === context.hiddenUrl) return false;
+    if (options.ignorePinned && tab.pinned) return false;
+    if (options.scope === "current" && tab.windowId !== context.currentWindowId) return false;
+    if (!matchesState(tab, options.state) || !matchesAccessed(tab, options.accessed, now)) {
+      return false;
+    }
+    return !matcher || matcher(searchText(tab, options.field));
+  });
+  return sortTabs(base.filter(presetPredicate(options.preset, base, now)), options.sort);
+}
+function pruneSelection(selected, visible) {
+  const ids = new Set(visible.map((tab) => tab.id));
+  for (const id of selected) if (!ids.has(id)) selected.delete(id);
+}
+var NO_DOMAIN = "(no domain)";
+function groupKey(tab, by) {
+  if (by === "domain") return hostname(tab) || NO_DOMAIN;
+  if (by === "window") return String(tab.windowId);
+  if (by === "state") return primaryState(tab);
+  return "";
+}
+function groupTabs(tabs, by, sort) {
+  if (by === "none") return [
+    {
+      key: "",
+      tabs
+    }
+  ];
+  const map = /* @__PURE__ */ new Map();
+  for (const tab of tabs) {
+    const key = groupKey(tab, by);
+    const list = map.get(key);
+    if (list) list.push(tab);
+    else map.set(key, [
+      tab
+    ]);
+  }
+  const groups = [
+    ...map
+  ].map(([key, tabs2]) => {
+    const times = tabs2.map((x) => x.lastAccessed || 0);
+    return {
+      key,
+      tabs: tabs2,
+      recent: Math.max(...times),
+      old: Math.min(...times)
+    };
+  });
+  const byName = (a, b) => a.key.localeCompare(b.key);
+  const comparators = {
+    "count-desc": (a, b) => b.tabs.length - a.tabs.length || byName(a, b),
+    "count-asc": (a, b) => a.tabs.length - b.tabs.length || byName(a, b),
+    recent: (a, b) => b.recent - a.recent,
+    old: (a, b) => a.old - b.old,
+    name: byName
+  };
+  groups.sort(comparators[sort] ?? comparators.name);
+  return groups.map(({ key, tabs: tabs2 }) => ({
+    key,
+    tabs: tabs2
+  }));
+}
+
+// src/explorer/render.ts
+var ICONS = {
+  pinned: '<path d="M9.5 2.5 13.5 6.5 11 7.5 8.5 10l.5 3-6-6 3 .5L8.5 5z"/><path d="m5 11-2.5 2.5"/>',
+  audio: '<path d="M3 6v4h2.5L9 13V3L5.5 6z"/><path d="M11.5 5.5a3.5 3.5 0 0 1 0 5"/>',
+  muted: '<path d="M3 6v4h2.5L9 13V3L5.5 6z"/><path d="m11.5 6.5 3 3m0-3-3 3"/>',
+  activate: '<path d="M6 3.5H3.5v9h9V10"/><path d="M9 3h4v4M13 3 7.5 8.5"/>',
+  close: '<path d="m4.5 4.5 7 7m0-7-7 7"/>'
+};
+function icon(name) {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 16 16");
+  svg.setAttribute("aria-hidden", "true");
+  svg.innerHTML = ICONS[name];
+  return svg;
+}
+function el(tag, props = {}, children = []) {
+  const node = Object.assign(document.createElement(tag), props);
+  node.append(...children);
+  return node;
+}
+function relativeTime(timestamp) {
+  if (!timestamp) return "\u2014";
+  const minutes = Math.floor(Math.max(0, Date.now() - timestamp) / 6e4);
+  if (minutes < 1) return t("now");
+  if (minutes < 60) return t("min", {
+    count: minutes
+  });
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return t("hour", {
+    count: hours
+  });
+  return t("day", {
+    count: Math.floor(hours / 24)
+  });
+}
+function displayUrl(url = "") {
+  try {
+    const u = new URL(url);
+    if (u.protocol !== "http:" && u.protocol !== "https:") return url;
+    const path = u.pathname === "/" ? "" : u.pathname;
+    return `${u.hostname.replace(/^www\./, "")}${path}${u.search}`;
+  } catch {
+    return url;
+  }
+}
+function favicon(tab) {
+  const letter = () => el("span", {
+    className: "favicon letter",
+    textContent: (hostname(tab) || "?").replace(/^www\./, "")[0]
+  });
+  const src = tab.favIconUrl;
+  if (!src || src.startsWith("chrome:")) return letter();
+  const img = el("img", {
+    className: "favicon"
+  });
+  img.alt = "";
+  img.loading = "lazy";
+  img.src = src;
+  img.addEventListener("error", () => img.replaceWith(letter()), {
+    once: true
+  });
+  return img;
+}
+function flag(text, cls = "", iconName) {
+  const node = el("span", {
+    className: `flag ${cls}`.trim(),
+    title: text
+  });
+  if (iconName) node.append(icon(iconName));
+  else node.textContent = text;
+  return node;
+}
+function flags(tab) {
+  const out = [];
+  if (tab.active) out.push(flag(t("active"), "active"));
+  if (tab.pinned) out.push(flag(t("pinned"), "", "pinned"));
+  if (tab.mutedInfo?.muted) out.push(flag(t("muted"), "", "muted"));
+  else if (tab.audible) out.push(flag(t("audio"), "", "audio"));
+  if (tab.discarded) out.push(flag(t("discarded_state")));
+  else if (tab.status === "loading") out.push(flag(t("loading")));
+  return out;
+}
+function rowButton(action, tabId, iconName, title) {
+  const button = el("button", {
+    className: `row-icon-btn ${action}`,
+    title
+  });
+  button.type = "button";
+  button.dataset.rowAction = action;
+  button.dataset.tabId = String(tabId);
+  button.append(icon(iconName));
+  return button;
+}
+function tabRow(tab) {
+  const id = tab.id;
+  const selected = state.selectedIds.has(id);
+  const checkbox2 = el("input", {
+    type: "checkbox",
+    checked: selected,
+    className: "row-checkbox"
+  });
+  checkbox2.dataset.tabId = String(id);
+  checkbox2.tabIndex = -1;
+  const classes = [
+    "tab-row"
+  ];
+  if (selected) classes.push("selected");
+  if (id === state.focusedId) classes.push("focused");
+  if (tab.active) classes.push("is-active");
+  if (tab.discarded) classes.push("is-discarded");
+  const row = el("div", {
+    className: classes.join(" ")
+  }, [
+    el("label", {
+      className: "row-check"
+    }, [
+      checkbox2
+    ]),
+    favicon(tab),
+    el("div", {
+      className: "tab-text"
+    }, [
+      el("span", {
+        className: "tab-title",
+        textContent: tab.title || t("untitled")
+      }),
+      el("span", {
+        className: "tab-host",
+        textContent: displayUrl(tab.url)
+      })
+    ]),
+    el("div", {
+      className: "tab-flags"
+    }, flags(tab)),
+    el("div", {
+      className: "last-access",
+      textContent: relativeTime(tab.lastAccessed),
+      title: tab.lastAccessed ? new Date(tab.lastAccessed).toLocaleString() : ""
+    }),
+    el("div", {
+      className: "row-actions"
+    }, [
+      rowButton("activate", id, "activate", t("activate_tab")),
+      rowButton("close", id, "close", t("close_tab"))
+    ])
+  ]);
+  row.title = `${tab.title || ""}
+${tab.url || ""}`;
+  row.dataset.tabId = String(id);
+  row.setAttribute("role", "option");
+  row.setAttribute("aria-selected", String(selected));
+  return row;
+}
+var STATE_LABELS = {
+  active: "state_active",
+  pinned: "state_pinned",
+  audible: "state_audible",
+  muted: "state_muted",
+  discarded: "state_discarded",
+  loading: "state_loading",
+  complete: "state_complete"
+};
+function groupLabel(key, by) {
+  if (by === "window") return t("window_group", {
+    id: key
+  });
+  if (by === "state") return t("state_group", {
+    state: t(STATE_LABELS[key])
+  });
+  return key === NO_DOMAIN ? t("no_domain") : key;
+}
+function renderList(groupBy, groupSort) {
+  const list = $("tabList");
+  if (!state.filteredTabs.length) {
+    list.replaceChildren(el("div", {
+      className: "empty-state",
+      textContent: t("no_match")
+    }));
+    return;
+  }
+  if (groupBy === "none") {
+    list.replaceChildren(...state.filteredTabs.map(tabRow));
+    return;
+  }
+  list.replaceChildren(...groupTabs(state.filteredTabs, groupBy, groupSort).map((group) => el("section", {
+    className: "group-block"
+  }, [
+    el("div", {
+      className: "group-header"
+    }, [
+      el("span", {
+        textContent: groupLabel(group.key, groupBy)
+      }),
+      el("span", {
+        className: "group-meta",
+        textContent: t("group_count", {
+          count: group.tabs.length
+        })
+      })
+    ]),
+    ...group.tabs.map(tabRow)
+  ])));
+}
+function displayOrder() {
+  return [
+    ...$("tabList").querySelectorAll(".tab-row")
+  ].map((row) => Number(row.dataset.tabId));
+}
+function scrollFocusedIntoView() {
+  $("tabList").querySelector(".tab-row.focused")?.scrollIntoView({
+    block: "nearest"
+  });
+}
+function renderFilterChips(filters) {
+  for (const [key, id] of Object.entries({
+    ...SELECT_IDS,
+    ...CHECKBOX_IDS
+  })) {
+    const changed = filters[key] !== DEFAULT_FILTERS[key];
+    $(id).closest(".chip")?.classList.toggle("changed", changed);
+  }
+  $("groupSortChip").classList.toggle("hidden", filters.groupBy === "none");
+}
+function renderTabs() {
+  const existing = new Set(state.allTabs.map((tab) => tab.id));
+  for (const id of state.selectedIds) if (!existing.has(id)) state.selectedIds.delete(id);
+  const filters = readFilters();
+  renderList(filters.groupBy, filters.groupSort);
+  renderFilterChips(filters);
+  const shown = state.filteredTabs.length;
+  const total = state.allTabs.length;
+  const selectedVisible = state.filteredTabs.filter((x) => state.selectedIds.has(x.id)).length;
+  const selectedCount = state.selectedIds.size;
+  $("tabTotalBadge").textContent = String(total);
+  $("selectionLabel").textContent = shown === total ? t("list_count", {
+    shown
+  }) : t("list_count_filtered", {
+    shown,
+    total
+  });
+  const selectAll = $("selectAllCheckbox");
+  selectAll.checked = shown > 0 && selectedVisible === shown;
+  selectAll.indeterminate = selectedVisible > 0 && selectedVisible < shown;
+  selectAll.disabled = shown === 0;
+  const closeShown2 = $("closeShownBtn");
+  closeShown2.textContent = t("close_all", {
+    count: shown
+  });
+  closeShown2.disabled = shown === 0;
+  $("selectionBar").classList.toggle("visible", selectedCount > 0);
+  $("selectionCount").textContent = t("selected_count", {
+    count: selectedCount
+  });
+  document.querySelectorAll("#selectionBar [data-action]").forEach((button) => {
+    button.disabled = selectedCount === 0;
+  });
+}
+
+// src/repl/editor.ts
+var import_codemirror2 = __toESM(require_codemirror());
 var import_javascript = __toESM(require_javascript());
-var import_show_hint = __toESM(require_show_hint());
 var import_closebrackets = __toESM(require_closebrackets());
 var import_matchbrackets = __toESM(require_matchbrackets());
-(function() {
-  "use strict";
-  const STORAGE_KEYS = {
-    settings: "tabConsole.settings",
-    presets: "tabConsole.presets",
-    history: "tabConsole.history",
-    ui: "tabConsole.ui"
-  };
-  const translations = {
-    ko: {
-      sync_query: "UI \u2192 \uCFFC\uB9AC",
-      sync_query_title: "\uC6B0\uCE21 \uD544\uD130 \uC0C1\uD0DC\uB97C \uC88C\uCE21 \uCFFC\uB9AC\uB85C \uAC15\uC81C \uB3D9\uAE30\uD654",
-      help: "\uB3C4\uC6C0\uB9D0",
-      clear: "\uC9C0\uC6B0\uAE30",
-      hide_console: "\uCF58\uC194 \uC228\uAE30\uAE30",
-      hide_console_title: "\uC6B0\uCE21 \uD0ED \uD0D0\uC0C9\uAE30\uB9CC \uC0AC\uC6A9",
-      show_console: "\uCF58\uC194 \uD45C\uC2DC",
-      refresh: "\uC0C8\uB85C\uACE0\uCE68",
-      settings: "\uC124\uC815",
-      editor_shortcuts: "Ctrl+Enter \uC2E4\uD589 \xB7 Ctrl+Space \uC790\uB3D9\uC644\uC131 \xB7 Alt+\u2191/\u2193 \uAE30\uB85D",
-      run: "\uC2E4\uD589",
-      tab_explorer: "\uD0ED \uD0D0\uC0C9\uAE30",
-      search_placeholder: "\uC81C\uBAA9 / URL \uAC80\uC0C9",
-      field_all: "\uC81C\uBAA9 + URL",
-      field_title: "\uC81C\uBAA9",
-      field_url: "URL",
-      field_host: "\uB3C4\uBA54\uC778",
-      scope: "\uBC94\uC704",
-      scope_all: "\uBAA8\uB4E0 \uCC3D",
-      scope_current: "\uD604\uC7AC \uCC3D",
-      state: "\uC0C1\uD0DC",
-      state_all: "\uBAA8\uB4E0 \uC0C1\uD0DC",
-      state_active: "\uD65C\uC131",
-      state_inactive: "\uBE44\uD65C\uC131",
-      state_pinned: "\uACE0\uC815\uB428",
-      state_unpinned: "\uACE0\uC815 \uC548 \uB428",
-      state_audible: "\uC18C\uB9AC \uC7AC\uC0DD",
-      state_muted: "\uC74C\uC18C\uAC70",
-      state_discarded: "\uC5B8\uB85C\uB4DC\uB428",
-      state_loading: "\uB85C\uB529 \uC911",
-      state_complete: "\uB85C\uB4DC \uC644\uB8CC",
-      accessed: "\uB9C8\uC9C0\uB9C9 \uC811\uADFC",
-      accessed_all: "\uC804\uCCB4",
-      accessed_lt5m: "5\uBD84 \uC774\uB0B4",
-      accessed_lt1h: "1\uC2DC\uAC04 \uC774\uB0B4",
-      accessed_lt24h: "24\uC2DC\uAC04 \uC774\uB0B4",
-      accessed_gt24h: "24\uC2DC\uAC04 \uCD08\uACFC",
-      accessed_gt7d: "7\uC77C \uCD08\uACFC",
-      accessed_gt30d: "30\uC77C \uCD08\uACFC",
-      accessed_never: "\uAE30\uB85D \uC5C6\uC74C",
-      sort: "\uC815\uB82C",
-      sort_recent: "\uC811\uADFC: \uCD5C\uADFC\uC21C",
-      sort_old: "\uC811\uADFC: \uC624\uB798\uB41C\uC21C",
-      sort_state: "\uC0C1\uD0DC",
-      sort_domain: "\uB3C4\uBA54\uC778",
-      sort_title: "\uC81C\uBAA9",
-      sort_window: "\uCC3D / \uD0ED \uC21C\uC11C",
-      group_by: "\uADF8\uB8F9\uD654",
-      group_none: "\uC548 \uD568",
-      group_domain: "\uB3C4\uBA54\uC778",
-      group_window: "\uCC3D",
-      group_state: "\uC0C1\uD0DC",
-      group_sort: "\uADF8\uB8F9 \uC815\uB82C",
-      group_sort_name: "\uC774\uB984",
-      group_sort_count_desc: "\uAC1C\uC218 \u2193",
-      group_sort_count_asc: "\uAC1C\uC218 \u2191",
-      group_sort_recent: "\uCD5C\uADFC \uC811\uADFC",
-      group_sort_old: "\uC624\uB798\uB41C \uC811\uADFC",
-      ignore_pinned: "\uACE0\uC815 \uD0ED \uBB34\uC2DC",
-      ignore_pinned_desc: "\uACE0\uC815 \uD0ED\uC744 \uC870\uD68C \uACB0\uACFC\uC640 \uC77C\uAD04 \uC791\uC5C5 \uB300\uC0C1\uC5D0\uC11C \uC81C\uC678\uD569\uB2C8\uB2E4.",
-      preset_all: "\uC804\uCCB4",
-      preset_duplicates: "\uC911\uBCF5 URL",
-      preset_stale: "24\uC2DC\uAC04 \uBBF8\uC811\uADFC",
-      preset_audible: "\uC18C\uB9AC \uC7AC\uC0DD",
-      preset_discarded: "\uC5B8\uB85C\uB4DC\uB428",
-      save_preset: "\uD504\uB9AC\uC14B \uC800\uC7A5",
-      close_shown: "\uC870\uD68C \uACB0\uACFC \uB2EB\uAE30",
-      close_selected: "\uC120\uD0DD \uD56D\uBAA9 \uB2EB\uAE30",
-      close_shown_desc: "\uD604\uC7AC \uD544\uD130\uB97C \uD1B5\uACFC\uD574 \uD654\uBA74\uC5D0 \uD45C\uC2DC\uB41C \uD0ED\uC744 \uC120\uD0DD \uC5EC\uBD80\uC640 \uAD00\uACC4\uC5C6\uC774 \uC804\uBD80 \uB2EB\uC2B5\uB2C8\uB2E4.",
-      close_selected_desc: "\uCCB4\uD06C\uBC15\uC2A4\uB85C \uC120\uD0DD\uD55C \uD0ED\uB9CC \uB2EB\uC2B5\uB2C8\uB2E4.",
-      discard: "\uC5B8\uB85C\uB4DC",
-      reload: "\uC0C8\uB85C\uACE0\uCE68",
-      pin: "\uACE0\uC815",
-      unpin: "\uACE0\uC815 \uD574\uC81C",
-      mute: "\uC74C\uC18C\uAC70",
-      unmute: "\uC74C\uC18C\uAC70 \uD574\uC81C",
-      tab: "\uD0ED",
-      theme_toggle: "\uB77C\uC774\uD2B8/\uB2E4\uD06C \uBAA8\uB4DC \uC804\uD658",
-      help_title: "REPL \uB3C4\uC6B0\uBBF8",
-      help_tabs: "\uD604\uC7AC \uC6B0\uCE21 \uD544\uD130 \uACB0\uACFC",
-      help_selected: "\uCCB4\uD06C\uD55C \uD0ED",
-      help_last: "\uC9C1\uC804 REPL \uACB0\uACFC",
-      help_query: "\uC6B0\uCE21 \uD544\uD130 \uC0C1\uD0DC\uB97C \uC801\uC6A9\uD558\uACE0 \uACB0\uACFC \uBC18\uD658",
-      help_close: "\uD604\uC7AC \uD544\uD130 \uACB0\uACFC \uB2EB\uAE30",
-      help_table: "\uCF58\uC194\uC5D0 \uD45C \uB80C\uB354\uB9C1",
-      help_raw: "Firefox WebExtension \uC6D0\uBCF8 API",
-      confirm_close: "\uD0ED \uB2EB\uAE30 \uC804 \uD655\uC778",
-      hide_self: "Tab Console \uC790\uCCB4 \uC228\uAE30\uAE30",
-      auto_refresh: "\uD0ED \uBCC0\uACBD \uC2DC \uC790\uB3D9 \uC0C8\uB85C\uACE0\uCE68",
-      theme: "\uD14C\uB9C8",
-      theme_light: "\uB77C\uC774\uD2B8",
-      theme_dark: "\uB2E4\uD06C",
-      reset: "\uC800\uC7A5 \uC0C1\uD0DC \uCD08\uAE30\uD654",
-      done: "\uC644\uB8CC",
-      linked: "UI \uCFFC\uB9AC \uC5F0\uB3D9\uB428",
-      edited: "\uC0AC\uC6A9\uC790 \uCF54\uB4DC \u2014 UI \uC790\uB3D9 \uB36E\uC5B4\uC4F0\uAE30 \uC911\uC9C0",
-      ready: "\uC900\uBE44\uB428",
-      running: "\uC2E4\uD589 \uC911\u2026",
-      completed: "\uC644\uB8CC",
-      error: "\uC624\uB958",
-      refresh_failed: "\uC0C8\uB85C\uACE0\uCE68 \uC2E4\uD328",
-      no_match: "\uC870\uAC74\uC5D0 \uB9DE\uB294 \uD0ED\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.",
-      selected_shown: "{selected}\uAC1C \uC120\uD0DD \xB7 {shown}\uAC1C \uD45C\uC2DC",
-      tabs_count: "{count}\uAC1C \uD0ED",
-      shown_total: "{shown}\uAC1C \uD45C\uC2DC \xB7 \uC804\uCCB4 {total}\uAC1C",
-      group_count: "{count}\uAC1C",
-      now: "\uBC29\uAE08",
-      min: "{count}\uBD84",
-      hour: "{count}\uC2DC\uAC04",
-      day: "{count}\uC77C",
-      untitled: "(\uC81C\uBAA9 \uC5C6\uC74C)",
-      active: "\uD65C\uC131",
-      pinned: "\uACE0\uC815",
-      audio: "\uC18C\uB9AC",
-      muted: "\uC74C\uC18C\uAC70",
-      discarded_state: "\uC5B8\uB85C\uB4DC",
-      loading: "\uB85C\uB529",
-      complete: "\uC644\uB8CC",
-      activate_tab: "\uD0ED \uD65C\uC131\uD654",
-      close_tab: "\uD0ED \uB2EB\uAE30",
-      preset_name: "\uD504\uB9AC\uC14B \uC774\uB984:",
-      delete_preset: "\uD504\uB9AC\uC14B \u2018{name}\u2019\uC744 \uC0AD\uC81C\uD560\uAE4C\uC694?",
-      close_shown_confirm: "\uD45C\uC2DC\uB41C \uD0ED {count}\uAC1C\uB97C \uBAA8\uB450 \uB2EB\uC744\uAE4C\uC694?",
-      close_selected_confirm: "\uC120\uD0DD\uD55C \uD0ED {count}\uAC1C\uB97C \uB2EB\uC744\uAE4C\uC694?",
-      close_one_confirm: "\u2018{title}\u2019 \uD0ED\uC744 \uB2EB\uC744\uAE4C\uC694?",
-      reset_confirm: "\uD544\uD130, \uD504\uB9AC\uC14B, \uC124\uC815, REPL \uAE30\uB85D\uC744 \uCD08\uAE30\uD654\uD560\uAE4C\uC694?",
-      ready_console: "\uC900\uBE44\uB428. {count}\uAC1C \uD0ED\uC744 \uC77D\uC5C8\uC2B5\uB2C8\uB2E4. $tabs, $selected, $_, browser.*\uB97C \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
-      errors: "\uC624\uB958 {count}\uAC1C",
-      rows: "{count}\uD589",
-      first100: "\uCC98\uC74C 100\uD589 \uD45C\uC2DC",
-      window_group: "\uCC3D {id}",
-      state_group: "\uC0C1\uD0DC: {state}"
-    },
-    en: {
-      sync_query: "UI \u2192 Query",
-      sync_query_title: "Force the current right-panel filters into the left query",
-      help: "Help",
-      clear: "Clear",
-      hide_console: "Hide console",
-      hide_console_title: "Use the Tab Explorer alone",
-      show_console: "Show console",
-      refresh: "Refresh",
-      settings: "Settings",
-      editor_shortcuts: "Ctrl+Enter run \xB7 Ctrl+Space complete \xB7 Alt+\u2191/\u2193 history",
-      run: "Run",
-      tab_explorer: "Tab Explorer",
-      search_placeholder: "Search title / URL",
-      field_all: "Title + URL",
-      field_title: "Title",
-      field_url: "URL",
-      field_host: "Domain",
-      scope: "Scope",
-      scope_all: "All windows",
-      scope_current: "Current window",
-      state: "State",
-      state_all: "Any state",
-      state_active: "Active",
-      state_inactive: "Inactive",
-      state_pinned: "Pinned",
-      state_unpinned: "Unpinned",
-      state_audible: "Audible",
-      state_muted: "Muted",
-      state_discarded: "Discarded",
-      state_loading: "Loading",
-      state_complete: "Complete",
-      accessed: "Accessed",
-      accessed_all: "Any time",
-      accessed_lt5m: "Within 5 min",
-      accessed_lt1h: "Within 1 h",
-      accessed_lt24h: "Within 24 h",
-      accessed_gt24h: "Older than 24 h",
-      accessed_gt7d: "Older than 7 d",
-      accessed_gt30d: "Older than 30 d",
-      accessed_never: "No timestamp",
-      sort: "Sort",
-      sort_recent: "Accessed: recent",
-      sort_old: "Accessed: old",
-      sort_state: "State",
-      sort_domain: "Domain",
-      sort_title: "Title",
-      sort_window: "Window / index",
-      group_by: "Group by",
-      group_none: "None",
-      group_domain: "Domain",
-      group_window: "Window",
-      group_state: "State",
-      group_sort: "Group sort",
-      group_sort_name: "Name",
-      group_sort_count_desc: "Count \u2193",
-      group_sort_count_asc: "Count \u2191",
-      group_sort_recent: "Recent access",
-      group_sort_old: "Old access",
-      ignore_pinned: "Ignore pinned",
-      ignore_pinned_desc: "Pinned tabs are excluded from results and bulk actions.",
-      preset_all: "All",
-      preset_duplicates: "Duplicates",
-      preset_stale: "Stale 24 h",
-      preset_audible: "Audible",
-      preset_discarded: "Discarded",
-      save_preset: "Save preset",
-      close_shown: "Close shown",
-      close_selected: "Close selected",
-      close_shown_desc: "Closes every tab currently visible after filtering, regardless of selection.",
-      close_selected_desc: "Closes only checked tabs.",
-      discard: "Discard",
-      reload: "Reload",
-      pin: "Pin",
-      unpin: "Unpin",
-      mute: "Mute",
-      unmute: "Unmute",
-      tab: "Tab",
-      theme_toggle: "Toggle light/dark mode",
-      help_title: "REPL helpers",
-      help_tabs: "Current filtered result",
-      help_selected: "Checked tabs",
-      help_last: "Previous REPL result",
-      help_query: "Apply/query the right-panel state",
-      help_close: "Close current filtered tabs",
-      help_table: "Render a table in the console",
-      help_raw: "Raw Firefox WebExtension API",
-      confirm_close: "Confirm before closing tabs",
-      hide_self: "Hide Tab Console itself",
-      auto_refresh: "Auto refresh on tab changes",
-      theme: "Theme",
-      theme_light: "Light",
-      theme_dark: "Dark",
-      reset: "Reset saved state",
-      done: "Done",
-      linked: "UI query linked",
-      edited: "Custom code \u2014 UI auto-rewrite paused",
-      ready: "Ready",
-      running: "Running\u2026",
-      completed: "Completed",
-      error: "Error",
-      refresh_failed: "Refresh failed",
-      no_match: "No tabs match this filter.",
-      selected_shown: "{selected} selected \xB7 {shown} shown",
-      tabs_count: "{count} tabs",
-      shown_total: "{shown} shown \xB7 {total} total",
-      group_count: "{count}",
-      now: "now",
-      min: "{count} min",
-      hour: "{count} h",
-      day: "{count} d",
-      untitled: "(untitled)",
-      active: "active",
-      pinned: "pinned",
-      audio: "audio",
-      muted: "muted",
-      discarded_state: "discarded",
-      loading: "loading",
-      complete: "complete",
-      activate_tab: "Activate tab",
-      close_tab: "Close tab",
-      preset_name: "Preset name:",
-      delete_preset: "Delete preset \u2018{name}\u2019?",
-      close_shown_confirm: "Close all {count} shown tabs?",
-      close_selected_confirm: "Close {count} selected tabs?",
-      close_one_confirm: "Close \u2018{title}\u2019?",
-      reset_confirm: "Reset filters, presets, settings, and REPL history?",
-      ready_console: "Ready. {count} tabs available. Use $tabs, $selected, $_, or browser.* in the REPL.",
-      errors: "{count} errors",
-      rows: "{count} rows",
-      first100: "first 100 shown",
-      window_group: "Window {id}",
-      state_group: "State: {state}"
-    }
-  };
-  const prefersKorean = (navigator.languages || [
-    navigator.language || ""
-  ]).some((x) => String(x).toLowerCase().startsWith("ko"));
-  const defaults = {
-    confirmClose: true,
-    hideSelf: true,
-    autoRefresh: true,
-    theme: "light",
-    language: prefersKorean ? "ko" : "en"
-  };
-  const state = {
-    allTabs: [],
-    filteredTabs: [],
-    selectedIds: /* @__PURE__ */ new Set(),
-    currentWindowId: null,
-    activePreset: "all",
-    customPresets: [],
-    settings: {
-      ...defaults
-    },
-    history: [],
-    historyIndex: 0,
-    lastResult: void 0,
-    errorCount: 0,
-    consoleHidden: false,
-    consoleWidth: "48vw",
-    refreshTimer: null,
-    searchTimer: null,
-    rendering: false,
-    editorDirty: false,
-    syncingEditor: false,
-    lastGeneratedQuery: ""
-  };
-  const $ = (id) => document.getElementById(id);
-  const t = (key, vars = {}) => {
-    const dict = translations[state.settings.language] || translations.en;
-    let value = dict[key] ?? translations.en[key] ?? key;
-    for (const [name, replacement] of Object.entries(vars)) {
-      value = value.replaceAll(`{${name}}`, String(replacement));
-    }
-    return value;
-  };
-  const safeParse = (text, fallback) => {
-    if (text == null || text === "") return fallback;
+
+// src/repl/completion.ts
+var import_codemirror = __toESM(require_codemirror());
+var import_show_hint = __toESM(require_show_hint());
+var KEYWORDS = [
+  "async",
+  "await",
+  "const",
+  "let",
+  "return",
+  "if",
+  "else",
+  "for",
+  "of",
+  "while",
+  "try",
+  "catch",
+  "throw",
+  "new",
+  "typeof"
+];
+var BUILTINS = [
+  "Array",
+  "Object",
+  "Map",
+  "Set",
+  "Promise",
+  "RegExp",
+  "URL",
+  "Date",
+  "JSON",
+  "Math",
+  "Intl",
+  "console",
+  "globalThis"
+];
+function ownKeysDeep(obj) {
+  const out = /* @__PURE__ */ new Set();
+  let cur = obj;
+  for (let depth = 0; cur && depth < 3; depth++) {
     try {
-      return JSON.parse(text) ?? fallback;
+      Object.getOwnPropertyNames(cur).forEach((k) => out.add(k));
+      cur = Object.getPrototypeOf(cur);
     } catch {
-      return fallback;
+      break;
     }
-  };
-  const saveLocal = (key, value) => localStorage.setItem(key, JSON.stringify(value));
-  function loadState() {
-    state.settings = {
-      ...defaults,
-      ...safeParse(localStorage.getItem(STORAGE_KEYS.settings), {})
-    };
-    state.customPresets = safeParse(localStorage.getItem(STORAGE_KEYS.presets), []);
-    state.history = safeParse(localStorage.getItem(STORAGE_KEYS.history), []);
-    const savedUi = safeParse(localStorage.getItem(STORAGE_KEYS.ui), {});
-    state.consoleHidden = !!savedUi.consoleHidden;
-    state.consoleWidth = savedUi.consoleWidth || "48vw";
   }
-  loadState();
-  const editor = import_codemirror.default.fromTextArea($("codeEditor"), {
+  out.delete("__proto__");
+  return [
+    ...out
+  ].sort();
+}
+function resolveChain(chain) {
+  let value = globalThis;
+  for (const part of chain.split(".")) {
+    if (!part) continue;
+    try {
+      value = value[part];
+    } catch {
+      return null;
+    }
+    if (value == null) return null;
+  }
+  return value;
+}
+var startsWith = (prefix) => (x) => x.toLowerCase().startsWith(prefix.toLowerCase());
+function installCompletion(editor, globals) {
+  const words = [
+    ...globals,
+    ...BUILTINS,
+    ...KEYWORDS
+  ];
+  const hint = (cm) => {
+    const cursor = cm.getCursor();
+    const line = cm.getLine(cursor.line).slice(0, cursor.ch);
+    const chain = line.match(/([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*)\.([A-Za-z_$][\w$]*)?$/);
+    let list = [];
+    let fromCh = cursor.ch;
+    if (chain) {
+      const target = resolveChain(chain[1]), prefix = chain[2] || "";
+      fromCh -= prefix.length;
+      if (target) list = ownKeysDeep(target).filter(startsWith(prefix));
+    } else {
+      const prefix = line.match(/([A-Za-z_$][\w$]*)$/)?.[1] || "";
+      fromCh -= prefix.length;
+      list = words.filter(startsWith(prefix));
+    }
+    return {
+      list: list.slice(0, 120),
+      from: import_codemirror.default.Pos(cursor.line, fromCh),
+      to: import_codemirror.default.Pos(cursor.line, cursor.ch)
+    };
+  };
+  const show = (cm) => cm.showHint({
+    hint,
+    completeSingle: false
+  });
+  editor.on("inputRead", (cm, change) => {
+    if (change.text?.length === 1 && change.text[0] === ".") show(cm);
+  });
+  return show;
+}
+
+// src/repl/format.ts
+var MAX_ITEMS = 80;
+var MAX_DEPTH = 4;
+var indent = (items) => items.join(",\n  ").replaceAll("\n", "\n  ");
+function formatValue(value, depth = 0, seen = /* @__PURE__ */ new WeakSet()) {
+  if (value === void 0) return "undefined";
+  if (value === null) return "null";
+  if (typeof value === "string") return JSON.stringify(value);
+  if (typeof value === "number" || typeof value === "boolean" || typeof value === "bigint") {
+    return String(value);
+  }
+  if (typeof value === "function") return `\u0192 ${value.name || "anonymous"}()`;
+  if (value instanceof Error) return value.stack || `${value.name}: ${value.message}`;
+  if (value instanceof RegExp) return value.toString();
+  if (value instanceof Date) return value.toISOString();
+  if (typeof value !== "object") return String(value);
+  if (seen.has(value)) return "[Circular]";
+  seen.add(value);
+  if (depth > MAX_DEPTH) return Array.isArray(value) ? "[\u2026]" : "{\u2026}";
+  if (Array.isArray(value)) {
+    const items2 = value.slice(0, MAX_ITEMS).map((x) => formatValue(x, depth + 1, seen));
+    if (value.length > MAX_ITEMS) items2.push(`\u2026 ${value.length - MAX_ITEMS} more`);
+    return `[
+  ${indent(items2)}
+]`;
+  }
+  let keys;
+  try {
+    keys = Object.keys(value);
+  } catch {
+    return String(value);
+  }
+  const items = keys.slice(0, MAX_ITEMS).map((key) => {
+    let result;
+    try {
+      result = formatValue(value[key], depth + 1, seen);
+    } catch (err) {
+      result = `[Thrown: ${err.message}]`;
+    }
+    return `${key}: ${result}`;
+  });
+  if (keys.length > MAX_ITEMS) items.push(`\u2026 ${keys.length - MAX_ITEMS} more`);
+  return `{
+  ${indent(items)}
+}`;
+}
+function formatArgs(args) {
+  return args.map((v) => typeof v === "string" ? v : formatValue(v)).join(" ");
+}
+var MAX_TABLE_ROWS = 100;
+var MAX_TABLE_COLUMNS = 12;
+function tableData(value) {
+  let rows;
+  if (Array.isArray(value)) rows = value;
+  else if (value && typeof value === "object") {
+    const record = value;
+    rows = Object.keys(record).map((key) => record[key] && typeof record[key] === "object" ? {
+      "(index)": key,
+      ...record[key]
+    } : {
+      "(index)": key,
+      value: record[key]
+    });
+  } else return null;
+  const shown = rows.slice(0, MAX_TABLE_ROWS);
+  const columns = [];
+  for (const row of shown) {
+    if (row && typeof row === "object") {
+      for (const key of Object.keys(row)) {
+        if (!columns.includes(key) && columns.length < MAX_TABLE_COLUMNS) columns.push(key);
+      }
+    } else if (!columns.includes("value")) columns.push("value");
+  }
+  const cell = (row, key) => {
+    const v = row && typeof row === "object" ? row[key] : key === "value" ? row : void 0;
+    return v && typeof v === "object" ? formatValue(v, 1) : String(v ?? "");
+  };
+  return {
+    columns,
+    rows: shown.map((row) => columns.map((key) => cell(row, key))),
+    total: rows.length
+  };
+}
+
+// src/repl/output.ts
+var errorCount = 0;
+var nowTime = () => (/* @__PURE__ */ new Date()).toLocaleTimeString([], {
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit"
+});
+function div(className, text) {
+  const el2 = document.createElement("div");
+  el2.className = className;
+  if (text !== void 0) el2.textContent = text;
+  return el2;
+}
+function append(entry) {
+  const output = $("consoleOutput");
+  output.appendChild(entry);
+  output.scrollTop = output.scrollHeight;
+}
+function updateProblemCount() {
+  const el2 = $("problemCount");
+  el2.textContent = t("errors", {
+    count: errorCount
+  });
+  el2.classList.toggle("has-errors", errorCount > 0);
+}
+function printSource(source) {
+  const entry = div("console-entry source");
+  entry.append(div("source-line", source), div("console-meta", nowTime()));
+  append(entry);
+}
+function print(kind, value) {
+  const entry = div(`console-entry ${kind}`);
+  const text = Array.isArray(value) && kind !== "result" ? formatArgs(value) : formatValue(value);
+  entry.append(div("console-value", text), div("console-meta", nowTime()));
+  append(entry);
+  if (kind === "error") {
+    errorCount++;
+    updateProblemCount();
+  }
+}
+var printError = (err) => print("error", err);
+function printTable(value) {
+  const data = tableData(value);
+  if (!data) return print("log", [
+    value
+  ]);
+  const table = document.createElement("table");
+  table.className = "console-table";
+  const head = table.createTHead().insertRow();
+  for (const column of data.columns) {
+    head.appendChild(document.createElement("th")).textContent = column;
+  }
+  const body = table.createTBody();
+  for (const row of data.rows) {
+    const tr = body.insertRow();
+    for (const cell of row) tr.insertCell().textContent = cell;
+  }
+  const meta = [
+    t("rows", {
+      count: data.total
+    })
+  ];
+  if (data.total > data.rows.length) meta.push(t("first100"));
+  meta.push(nowTime());
+  const entry = div("console-entry log");
+  entry.append(table, div("console-meta", meta.join(" \xB7 ")));
+  append(entry);
+}
+function clearConsole() {
+  $("consoleOutput").textContent = "";
+  errorCount = 0;
+  updateProblemCount();
+}
+var replConsole = {
+  log: (...args) => print("log", args),
+  info: (...args) => print("info", args),
+  warn: (...args) => print("warn", args),
+  error: (...args) => print("error", args),
+  table: printTable,
+  clear: clearConsole
+};
+
+// src/repl/evaluate.ts
+var indirectEval = globalThis.eval;
+function compile(source) {
+  try {
+    return indirectEval(`(async (console) => (
+${source}
+))`);
+  } catch (err) {
+    if (!(err instanceof SyntaxError)) throw err;
+    return indirectEval(`(async (console) => {
+${source}
+})`);
+  }
+}
+var evaluate = (source) => compile(source)(replConsole);
+
+// src/repl/editor.ts
+var HISTORY_LIMIT = 100;
+function createRepl({ globals, uiQuerySource }) {
+  const history = storage.history();
+  let historyIndex = history.length;
+  let lastResult;
+  let dirty = false;
+  let syncing = false;
+  let lastGenerated = "";
+  async function run() {
+    const source = editor.getValue().trim();
+    if (!source) return;
+    if (history.at(-1) !== source) {
+      history.push(source);
+      if (history.length > HISTORY_LIMIT) history.shift();
+      storage.saveHistory(history);
+    }
+    historyIndex = history.length;
+    printSource(source);
+    setStatus(t("running"));
+    try {
+      lastResult = await evaluate(source);
+      print("result", lastResult);
+      setStatus(t("completed"));
+    } catch (err) {
+      print("error", err);
+      setStatus(t("error"));
+    }
+  }
+  function moveHistory(delta) {
+    if (!history.length) return;
+    historyIndex = Math.max(0, Math.min(history.length, historyIndex + delta));
+    editor.setValue(historyIndex === history.length ? "" : history[historyIndex]);
+    editor.setCursor(editor.lineCount(), 0);
+  }
+  const editor = import_codemirror2.default.fromTextArea($("codeEditor"), {
     mode: "javascript",
     lineNumbers: true,
     lineWrapping: true,
@@ -13245,1159 +14171,702 @@ var import_matchbrackets = __toESM(require_matchbrackets());
     matchBrackets: true,
     viewportMargin: Infinity,
     extraKeys: {
-      "Ctrl-Enter": runEditor,
-      "Cmd-Enter": runEditor,
+      "Ctrl-Enter": run,
+      "Cmd-Enter": run,
       "Ctrl-Space": (cm) => showCompletion(cm),
       "Alt-Up": () => moveHistory(-1),
       "Alt-Down": () => moveHistory(1),
       "Ctrl-L": clearConsole
     }
   });
-  function setStatus(text) {
-    $("statusText").textContent = text;
+  const showCompletion = installCompletion(editor, globals);
+  function updateLinkState() {
+    $("queryLinkState").textContent = dirty ? t("edited") : t("linked");
   }
-  function nowTime() {
-    return (/* @__PURE__ */ new Date()).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit"
-    });
+  function syncFromUi(force = false) {
+    if (!force && dirty) return;
+    const source = uiQuerySource();
+    lastGenerated = source;
+    syncing = true;
+    if (editor.getValue() !== source) editor.setValue(source);
+    syncing = false;
+    dirty = false;
+    updateLinkState();
   }
-  function applyI18n() {
-    document.documentElement.lang = state.settings.language;
-    $("languageSelect").value = state.settings.language;
-    document.querySelectorAll("[data-i18n]").forEach((el) => {
-      el.textContent = t(el.dataset.i18n);
-    });
-    document.querySelectorAll("[data-i18n-title]").forEach((el) => {
-      el.title = t(el.dataset.i18nTitle);
-    });
-    document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
-      el.placeholder = t(el.dataset.i18nPlaceholder);
-    });
-    updateProblemCount();
-    updateQueryLinkState();
-    renderTabs();
-  }
-  function applyTheme() {
-    document.documentElement.dataset.theme = state.settings.theme === "dark" ? "dark" : "light";
-    $("themeSelect").value = state.settings.theme;
-    $("themeBtn").textContent = state.settings.theme === "dark" ? "\u263E" : "\u2600";
-  }
-  function formatValue(value, depth = 0, seen = /* @__PURE__ */ new WeakSet()) {
-    if (value === void 0) return "undefined";
-    if (value === null) return "null";
-    if (typeof value === "string") return JSON.stringify(value);
-    if ([
-      "number",
-      "boolean",
-      "bigint"
-    ].includes(typeof value)) return String(value);
-    if (typeof value === "function") return `\u0192 ${value.name || "anonymous"}()`;
-    if (value instanceof Error) return value.stack || `${value.name}: ${value.message}`;
-    if (value instanceof RegExp) return value.toString();
-    if (value instanceof Date) return value.toISOString();
-    if (typeof value === "object") {
-      if (seen.has(value)) return "[Circular]";
-      seen.add(value);
-      if (depth > 4) return Array.isArray(value) ? "[\u2026]" : "{\u2026}";
-      if (Array.isArray(value)) {
-        const values2 = value.slice(0, 80).map((x) => formatValue(x, depth + 1, seen));
-        if (value.length > 80) values2.push(`\u2026 ${value.length - 80} more`);
-        return `[
-  ${values2.join(",\n  ").replaceAll("\n", "\n  ")}
-]`;
-      }
-      let keys;
-      try {
-        keys = Object.keys(value);
-      } catch {
-        return String(value);
-      }
-      const values = keys.slice(0, 80).map((key) => {
-        let result;
-        try {
-          result = formatValue(value[key], depth + 1, seen);
-        } catch (err) {
-          result = `[Thrown: ${err.message}]`;
-        }
-        return `${key}: ${result}`;
-      });
-      if (keys.length > 80) values.push(`\u2026 ${keys.length - 80} more`);
-      return `{
-  ${values.join(",\n  ").replaceAll("\n", "\n  ")}
-}`;
-    }
-    return String(value);
-  }
-  function appendEntry(kind, value, source) {
-    const entry = document.createElement("div");
-    entry.className = `console-entry ${kind}`;
-    if (source) {
-      const src = document.createElement("div");
-      src.className = "source-line";
-      src.textContent = source;
-      entry.appendChild(src);
-    }
-    if (kind !== "source") {
-      const out = document.createElement("div");
-      out.className = "console-value";
-      out.textContent = Array.isArray(value) && kind !== "result" ? value.map((v) => typeof v === "string" ? v : formatValue(v)).join(" ") : formatValue(value);
-      entry.appendChild(out);
-    }
-    const meta = document.createElement("div");
-    meta.className = "console-meta";
-    meta.textContent = nowTime();
-    entry.appendChild(meta);
-    $("consoleOutput").appendChild(entry);
-    $("consoleOutput").scrollTop = $("consoleOutput").scrollHeight;
-    if (kind === "error") {
-      state.errorCount++;
-      updateProblemCount();
-    }
-  }
-  function appendTable(value) {
-    let rows;
-    if (Array.isArray(value)) rows = value;
-    else if (value && typeof value === "object") {
-      rows = Object.keys(value).map((key) => value[key] && typeof value[key] === "object" ? {
-        "(index)": key,
-        ...value[key]
-      } : {
-        "(index)": key,
-        value: value[key]
-      });
-    } else return appendEntry("log", [
-      value
-    ]);
-    const entry = document.createElement("div");
-    entry.className = "console-entry log";
-    const table = document.createElement("table");
-    table.className = "console-table";
-    const keys = [];
-    rows.slice(0, 100).forEach((row) => {
-      if (row && typeof row === "object") {
-        Object.keys(row).forEach((key) => {
-          if (!keys.includes(key) && keys.length < 12) keys.push(key);
-        });
-      } else if (!keys.includes("value")) keys.push("value");
-    });
-    const thead = document.createElement("thead"), hr = document.createElement("tr");
-    keys.forEach((key) => {
-      const th = document.createElement("th");
-      th.textContent = key;
-      hr.appendChild(th);
-    });
-    thead.appendChild(hr);
-    table.appendChild(thead);
-    const tbody = document.createElement("tbody");
-    rows.slice(0, 100).forEach((row) => {
-      const tr = document.createElement("tr");
-      keys.forEach((key) => {
-        const td = document.createElement("td");
-        const v = row && typeof row === "object" ? row[key] : key === "value" ? row : void 0;
-        td.textContent = v && typeof v === "object" ? formatValue(v, 1) : String(v ?? "");
-        tr.appendChild(td);
-      });
-      tbody.appendChild(tr);
-    });
-    table.appendChild(tbody);
-    entry.appendChild(table);
-    const meta = document.createElement("div");
-    meta.className = "console-meta";
-    meta.textContent = `${t("rows", {
-      count: rows.length
-    })}${rows.length > 100 ? ` \xB7 ${t("first100")}` : ""} \xB7 ${nowTime()}`;
-    entry.appendChild(meta);
-    $("consoleOutput").appendChild(entry);
-    $("consoleOutput").scrollTop = $("consoleOutput").scrollHeight;
-  }
-  const replConsole = {
-    log: (...args) => appendEntry("log", args),
-    info: (...args) => appendEntry("info", args),
-    warn: (...args) => appendEntry("warn", args),
-    error: (...args) => appendEntry("error", args),
-    table: appendTable,
-    clear: clearConsole
+  editor.on("change", () => {
+    if (syncing) return;
+    dirty = editor.getValue().trim() !== lastGenerated.trim();
+    updateLinkState();
+  });
+  return {
+    run,
+    syncFromUi,
+    updateLinkState,
+    refresh: () => editor.refresh(),
+    focus() {
+      editor.focus();
+      editor.setCursor(editor.lineCount(), 0);
+    },
+    value: () => editor.getValue(),
+    lastResult: () => lastResult
   };
-  function updateProblemCount() {
-    const el = $("problemCount");
-    el.textContent = t("errors", {
-      count: state.errorCount
+}
+
+// src/tabs/actions.ts
+function tabIds(items) {
+  if (items == null) return [];
+  const ids = /* @__PURE__ */ new Set();
+  for (const item of Array.isArray(items) ? items : [
+    items
+  ]) {
+    const id = typeof item === "number" ? item : item?.id;
+    if (Number.isInteger(id)) ids.add(id);
+  }
+  return [
+    ...ids
+  ];
+}
+function createTabActions(onChange) {
+  async function each(items, run) {
+    const result = await Promise.allSettled(tabIds(items).map(run));
+    onChange();
+    return result;
+  }
+  const update = (items, props) => each(items, (id) => browser.tabs.update(id, props));
+  const actions2 = {
+    async close(items) {
+      const ids = tabIds(items);
+      if (!ids.length) return 0;
+      await browser.tabs.remove(ids);
+      onChange();
+      return ids.length;
+    },
+    discard: (items) => each(items, (id) => browser.tabs.discard(id)),
+    reload: (items) => each(items, (id) => browser.tabs.reload(id)),
+    pin: (items) => update(items, {
+      pinned: true
+    }),
+    unpin: (items) => update(items, {
+      pinned: false
+    }),
+    mute: (items) => update(items, {
+      muted: true
+    }),
+    unmute: (items) => update(items, {
+      muted: false
+    }),
+    async activate(tab) {
+      const id = typeof tab === "number" ? tab : tab?.id;
+      if (!Number.isInteger(id)) throw new Error("activate(tab): valid tab or tab ID required");
+      const target = await browser.tabs.get(id);
+      await browser.windows.update(target.windowId, {
+        focused: true
+      });
+      return browser.tabs.update(id, {
+        active: true
+      });
+    }
+  };
+  return actions2;
+}
+
+// src/tabs/selection.ts
+function selectRange(selected, order, anchor, target, select2) {
+  const to = order.indexOf(target);
+  if (to < 0) return;
+  const anchorIndex = anchor == null ? -1 : order.indexOf(anchor);
+  const from = anchorIndex < 0 ? to : anchorIndex;
+  const [start, end] = from <= to ? [
+    from,
+    to
+  ] : [
+    to,
+    from
+  ];
+  for (const id of order.slice(start, end + 1)) {
+    if (select2) selected.add(id);
+    else selected.delete(id);
+  }
+}
+function moveFocus(order, current, delta) {
+  if (!order.length) return null;
+  if (!Number.isFinite(delta)) return delta < 0 ? order[0] : order.at(-1);
+  const index = current == null ? -1 : order.indexOf(current);
+  if (index < 0) return delta < 0 ? order.at(-1) : order[0];
+  return order[Math.max(0, Math.min(order.length - 1, index + delta))];
+}
+function extendRange(base, order, anchor, target) {
+  const next = new Set(base);
+  selectRange(next, order, anchor, target, true);
+  return next;
+}
+
+// src/main.ts
+var SEARCH_DEBOUNCE_MS = 180;
+var TAB_EVENT_REFRESH_MS = 180;
+var TAB_UPDATED_REFRESH_MS = 260;
+var ACTION_REFRESH_MS = 50;
+var refreshTimer;
+var searchTimer;
+function scheduleRefresh(delay, force = false) {
+  if (!force && !state.settings.autoRefresh) return;
+  clearTimeout(refreshTimer);
+  refreshTimer = setTimeout(() => refreshTabs().catch(() => {
+  }), delay);
+}
+var actions = createTabActions(() => scheduleRefresh(ACTION_REFRESH_MS, true));
+function saveUiState() {
+  storage.saveUi({
+    consoleHidden: state.consoleHidden,
+    consoleHeight: state.consoleHeight,
+    ...readFilters()
+  });
+}
+function applyFilters({ syncEditor = true } = {}) {
+  const regexError = $("regexError");
+  regexError.textContent = "";
+  try {
+    state.filteredTabs = filterTabs(state.allTabs, readFilters(), {
+      currentWindowId: state.currentWindowId,
+      hiddenUrl: state.settings.hideSelf ? browser.runtime.getURL("console.html") : null
     });
-    el.classList.toggle("has-errors", state.errorCount > 0);
+    pruneSelection(state.selectedIds, state.filteredTabs);
+    const shown = new Set(state.filteredTabs.map((tab) => tab.id));
+    if (state.focusedId != null && !shown.has(state.focusedId)) state.focusedId = null;
+    if (state.anchorId != null && !shown.has(state.anchorId)) state.anchorId = null;
+  } catch (err) {
+    if (!(err instanceof SyntaxError)) throw err;
+    regexError.textContent = err.message;
+    state.filteredTabs = [];
   }
-  function clearConsole() {
-    $("consoleOutput").textContent = "";
-    state.errorCount = 0;
-    updateProblemCount();
+  renderTabs();
+  markActiveView();
+  saveUiState();
+  if (syncEditor) repl.syncFromUi();
+}
+async function refreshTabs() {
+  try {
+    const [win, tabs] = await Promise.all([
+      browser.windows.getCurrent(),
+      browser.tabs.query({})
+    ]);
+    state.currentWindowId = win.id ?? null;
+    state.allTabs = tabs;
+    applyFilters();
+    return state.allTabs.slice();
+  } catch (err) {
+    printError(err);
+    setStatus(t("refresh_failed"));
+    throw err;
   }
-  const indirectEval = globalThis.eval;
-  function compileUserSource(source) {
-    try {
-      return indirectEval(`(async (console) => (
-${source}
-))`);
-    } catch (err) {
-      if (!(err instanceof SyntaxError)) throw err;
-      return indirectEval(`(async (console) => {
-${source}
-})`);
-    }
+}
+function scheduleSearch() {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => applyFilters(), SEARCH_DEBOUNCE_MS);
+}
+function queryFromRepl(options = {}) {
+  writeFilters(options);
+  applyFilters({
+    syncEditor: false
+  });
+  repl.syncFromUi(true);
+  return state.filteredTabs.slice();
+}
+var ui = {
+  refresh: refreshTabs,
+  select(items) {
+    for (const id of tabIds(items)) state.selectedIds.add(id);
+    renderTabs();
+    return selectedTabs();
+  },
+  clearSelection() {
+    state.selectedIds.clear();
+    renderTabs();
+  },
+  // Promise constructor turns a throw into a rejection, as the old async method did.
+  query: (options) => new Promise((resolve) => resolve(queryFromRepl(options))),
+  setFilter: queryFromRepl,
+  shown: () => state.filteredTabs.slice(),
+  state: () => readFilters(),
+  syncQuery: () => {
+    repl.syncFromUi(true);
+    return repl.value();
   }
-  async function executeUserSource(source) {
-    return await compileUserSource(source)(replConsole);
-  }
-  async function runEditor() {
-    const source = editor.getValue().trim();
-    if (!source) return;
-    if (!state.history.length || state.history.at(-1) !== source) {
-      state.history.push(source);
-      if (state.history.length > 100) state.history.shift();
-      saveLocal(STORAGE_KEYS.history, state.history);
-    }
-    state.historyIndex = state.history.length;
-    appendEntry("source", "", source);
-    setStatus(t("running"));
-    try {
-      const result = await executeUserSource(source);
-      state.lastResult = result;
-      appendEntry("result", result);
-      setStatus(t("completed"));
-    } catch (err) {
-      appendEntry("error", err);
-      setStatus(t("error"));
-    }
-  }
-  function moveHistory(delta) {
-    if (!state.history.length) return;
-    state.historyIndex = Math.max(0, Math.min(state.history.length, state.historyIndex + delta));
-    editor.setValue(state.historyIndex === state.history.length ? "" : state.history[state.historyIndex]);
-    editor.setCursor(editor.lineCount(), 0);
-  }
-  function ownKeysDeep(obj) {
-    const out = /* @__PURE__ */ new Set();
-    let cur = obj, depth = 0;
-    while (cur && depth < 3) {
-      try {
-        Object.getOwnPropertyNames(cur).forEach((k) => out.add(k));
-      } catch {
-        break;
-      }
-      cur = Object.getPrototypeOf(cur);
-      depth++;
-    }
-    return [
-      ...out
-    ].filter((x) => x !== "__proto__").sort();
-  }
-  function resolveChain(chain) {
-    let value = globalThis;
-    for (const part of chain.split(".")) {
-      if (!part) continue;
-      try {
-        value = value[part];
-      } catch {
-        return null;
-      }
-      if (value == null) return null;
-    }
-    return value;
-  }
-  const globalCompletions = [
+};
+var replGlobals = {
+  tabs: (query = {}) => browser.tabs.query(query),
+  refresh: refreshTabs,
+  close: actions.close,
+  discard: actions.discard,
+  reload: actions.reload,
+  pin: actions.pin,
+  unpin: actions.unpin,
+  mute: actions.mute,
+  unmute: actions.unmute,
+  activate: actions.activate,
+  hostname,
+  normalizeUrl,
+  table: printTable,
+  sleep: (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
+  ui
+};
+var repl = createRepl({
+  globals: [
     "browser",
     "$tabs",
     "$selected",
     "$_",
-    "tabs",
-    "refresh",
-    "close",
-    "discard",
-    "reload",
-    "pin",
-    "unpin",
-    "mute",
-    "unmute",
-    "activate",
-    "hostname",
-    "normalizeUrl",
-    "table",
-    "sleep",
-    "ui",
-    "Array",
-    "Object",
-    "Map",
-    "Set",
-    "Promise",
-    "RegExp",
-    "URL",
-    "Date",
-    "JSON",
-    "Math",
-    "Intl",
-    "console",
-    "globalThis",
-    "async",
-    "await",
-    "const",
-    "let",
-    "return",
-    "if",
-    "else",
-    "for",
-    "of",
-    "while",
-    "try",
-    "catch",
-    "throw",
-    "new",
-    "typeof"
-  ];
-  function completionHint(cm) {
-    const cursor = cm.getCursor(), line = cm.getLine(cursor.line).slice(0, cursor.ch);
-    const chainMatch = line.match(/([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*)\.([A-Za-z_$][\w$]*)?$/), wordMatch = line.match(/([A-Za-z_$][\w$]*)$/);
-    let list = [], fromCh = cursor.ch;
-    if (chainMatch) {
-      const target = resolveChain(chainMatch[1]), prefix = chainMatch[2] || "";
-      fromCh -= prefix.length;
-      if (target) {
-        list = ownKeysDeep(target).filter((x) => x.toLowerCase().startsWith(prefix.toLowerCase()));
-      }
-    } else {
-      const prefix = wordMatch?.[1] || "";
-      fromCh -= prefix.length;
-      list = globalCompletions.filter((x) => x.toLowerCase().startsWith(prefix.toLowerCase()));
-    }
-    return {
-      list: list.slice(0, 120),
-      from: import_codemirror.default.Pos(cursor.line, fromCh),
-      to: import_codemirror.default.Pos(cursor.line, cursor.ch)
-    };
+    ...Object.keys(replGlobals)
+  ],
+  uiQuerySource: () => `await ui.query(${JSON.stringify(nonDefaultFilters(readFilters()), null, 2)})`
+});
+Object.assign(globalThis, replGlobals);
+Object.defineProperties(globalThis, {
+  $tabs: {
+    configurable: true,
+    get: () => state.filteredTabs.slice()
+  },
+  $selected: {
+    configurable: true,
+    get: selectedTabs
+  },
+  $_: {
+    configurable: true,
+    get: repl.lastResult
   }
-  function showCompletion(cm) {
-    import_codemirror.default.showHint(cm, completionHint, {
-      completeSingle: false
-    });
-  }
-  editor.on("inputRead", (cm, change) => {
-    if (change.text?.length === 1 && change.text[0] === ".") showCompletion(cm);
-  });
-  editor.on("change", () => {
-    if (state.syncingEditor) return;
-    state.editorDirty = editor.getValue().trim() !== state.lastGeneratedQuery.trim();
-    updateQueryLinkState();
-  });
-  function normalizeItems(items) {
-    if (items == null) return [];
-    const ids = [];
-    for (const item of Array.isArray(items) ? items : [
-      items
-    ]) {
-      const id = typeof item === "number" ? item : item?.id;
-      if (Number.isInteger(id) && !ids.includes(id)) ids.push(id);
-    }
-    return ids;
-  }
-  const tabs = (query = {}) => browser.tabs.query(query);
-  async function closeTabs(items) {
-    const ids = normalizeItems(items);
-    if (!ids.length) return 0;
-    await browser.tabs.remove(ids);
-    scheduleRefresh(30);
-    return ids.length;
-  }
-  async function discardTabs(items) {
-    const ids = normalizeItems(items);
-    const r = await Promise.allSettled(ids.map((id) => browser.tabs.discard(id)));
-    scheduleRefresh(80);
-    return r;
-  }
-  async function reloadTabs(items) {
-    const ids = normalizeItems(items);
-    const r = await Promise.allSettled(ids.map((id) => browser.tabs.reload(id)));
-    scheduleRefresh(80);
-    return r;
-  }
-  async function updateTabs(items, props) {
-    const ids = normalizeItems(items);
-    const r = await Promise.allSettled(ids.map((id) => browser.tabs.update(id, props)));
-    scheduleRefresh(80);
-    return r;
-  }
-  const pinTabs = (items) => updateTabs(items, {
-    pinned: true
-  }), unpinTabs = (items) => updateTabs(items, {
-    pinned: false
-  }), muteTabs = (items) => updateTabs(items, {
-    muted: true
-  }), unmuteTabs = (items) => updateTabs(items, {
-    muted: false
-  });
-  async function activateTab(tab) {
-    const id = typeof tab === "number" ? tab : tab?.id;
-    if (!Number.isInteger(id)) throw new Error("activate(tab): valid tab or tab ID required");
-    const target = await browser.tabs.get(id);
-    await browser.windows.update(target.windowId, {
-      focused: true
-    });
-    return browser.tabs.update(id, {
-      active: true
-    });
-  }
-  function hostname(tabOrUrl) {
-    const raw = typeof tabOrUrl === "string" ? tabOrUrl : tabOrUrl?.url || "";
-    try {
-      return new URL(raw).hostname;
-    } catch {
-      return "";
-    }
-  }
-  function normalizeUrl(tabOrUrl) {
-    const raw = typeof tabOrUrl === "string" ? tabOrUrl : tabOrUrl?.url || "";
-    try {
-      const u = new URL(raw);
-      u.hash = "";
-      if (u.pathname.length > 1) u.pathname = u.pathname.replace(/\/+$/, "");
-      return u.toString();
-    } catch {
-      return raw.replace(/#.*$/, "").replace(/\/+$/, "");
-    }
-  }
-  const tableHelper = (value) => replConsole.table(value), sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-  function getUiOptions(includeDefaults = false) {
-    const raw = {
-      search: $("searchInput").value,
-      regex: $("regexToggle").checked,
-      field: $("fieldSelect").value,
-      scope: $("scopeSelect").value,
-      state: $("stateFilter").value,
-      accessed: $("accessedFilter").value,
-      sort: $("sortSelect").value,
-      groupBy: $("groupBySelect").value,
-      groupSort: $("groupSortSelect").value,
-      ignorePinned: $("ignorePinnedToggle").checked,
-      preset: state.activePreset
-    };
-    if (includeDefaults) return raw;
-    const defaults2 = {
-      search: "",
-      regex: false,
-      field: "all",
-      scope: "all",
-      state: "all",
-      accessed: "all",
-      sort: "recent",
-      groupBy: "none",
-      groupSort: "name",
-      ignorePinned: false,
-      preset: "all"
-    };
-    return Object.fromEntries(Object.entries(raw).filter(([key, value]) => value !== defaults2[key]));
-  }
-  function setUiOptions(opts = {}) {
-    if (opts.search !== void 0) $("searchInput").value = String(opts.search);
-    if (opts.regex !== void 0) $("regexToggle").checked = !!opts.regex;
-    if (opts.field !== void 0) $("fieldSelect").value = opts.field;
-    if (opts.scope !== void 0) $("scopeSelect").value = opts.scope;
-    if (opts.state !== void 0) $("stateFilter").value = opts.state;
-    if (opts.accessed !== void 0) $("accessedFilter").value = opts.accessed;
-    if (opts.sort !== void 0) $("sortSelect").value = opts.sort;
-    if (opts.groupBy !== void 0) $("groupBySelect").value = opts.groupBy;
-    if (opts.groupSort !== void 0) $("groupSortSelect").value = opts.groupSort;
-    if (opts.ignorePinned !== void 0) $("ignorePinnedToggle").checked = !!opts.ignorePinned;
-    if (opts.preset !== void 0) setPreset(opts.preset);
-  }
-  function buildUiQuerySource() {
-    return `await ui.query(${JSON.stringify(getUiOptions(false), null, 2)})`;
-  }
-  function syncEditorFromUi(force = false) {
-    if (!force && state.editorDirty) return;
-    const source = buildUiQuerySource();
-    state.lastGeneratedQuery = source;
-    state.syncingEditor = true;
-    if (editor.getValue() !== source) editor.setValue(source);
-    state.syncingEditor = false;
-    state.editorDirty = false;
-    updateQueryLinkState();
-  }
-  function updateQueryLinkState() {
-    $("queryLinkState").textContent = state.editorDirty ? t("edited") : t("linked");
-  }
-  const ui = {
-    refresh: refreshTabs,
-    select(items) {
-      normalizeItems(items).forEach((id) => state.selectedIds.add(id));
-      renderTabs();
-      return getSelectedTabs();
-    },
-    clearSelection() {
-      state.selectedIds.clear();
-      renderTabs();
-    },
-    async query(opts = {}) {
-      setUiOptions(opts);
-      applyFilters({
-        skipEditorSync: true
-      });
-      syncEditorFromUi(true);
-      return state.filteredTabs.slice();
-    },
-    setFilter(opts = {}) {
-      setUiOptions(opts);
-      applyFilters({
-        skipEditorSync: true
-      });
-      syncEditorFromUi(true);
-      return state.filteredTabs.slice();
-    },
-    shown: () => state.filteredTabs.slice(),
-    state: () => getUiOptions(true),
-    syncQuery: () => {
-      syncEditorFromUi(true);
-      return editor.getValue();
-    }
-  };
-  Object.assign(globalThis, {
-    tabs,
-    refresh: refreshTabs,
-    close: closeTabs,
-    discard: discardTabs,
-    reload: reloadTabs,
-    pin: pinTabs,
-    unpin: unpinTabs,
-    mute: muteTabs,
-    unmute: unmuteTabs,
-    activate: activateTab,
-    hostname,
-    normalizeUrl,
-    table: tableHelper,
-    sleep,
-    ui
-  });
-  Object.defineProperties(globalThis, {
-    "$tabs": {
-      configurable: true,
-      get: () => state.filteredTabs.slice()
-    },
-    "$selected": {
-      configurable: true,
-      get: () => getSelectedTabs()
-    },
-    "$_": {
-      configurable: true,
-      get: () => state.lastResult
-    }
-  });
-  function filterSearchValue(tab, field) {
-    if (field === "title") return tab.title || "";
-    if (field === "url") return tab.url || "";
-    if (field === "host") return hostname(tab);
-    return `${tab.title || ""}
-${tab.url || ""}`;
-  }
-  function getDuplicateSet(tabsList) {
-    const counts = /* @__PURE__ */ new Map();
-    tabsList.forEach((tab) => {
-      const key = normalizeUrl(tab);
-      if (key) counts.set(key, (counts.get(key) || 0) + 1);
-    });
-    return new Set([
-      ...counts
-    ].filter(([, count]) => count > 1).map(([key]) => key));
-  }
-  function presetPredicate(name, tabsList) {
-    const duplicateSet = name === "duplicates" ? getDuplicateSet(tabsList) : null, day = 864e5;
-    if (name === "duplicates") return (tab) => duplicateSet.has(normalizeUrl(tab));
-    if (name === "audible") return (tab) => !!tab.audible;
-    if (name === "pinned") return (tab) => !!tab.pinned;
-    if (name === "discarded") return (tab) => !!tab.discarded;
-    if (name === "stale24") {
-      return (tab) => !!tab.lastAccessed && tab.lastAccessed < Date.now() - day;
-    }
-    if (name === "linear") {
-      return (tab) => {
-        const h = hostname(tab);
-        return h === "linear.app" || h.endsWith(".linear.app");
-      };
-    }
-    if (name === "github") {
-      return (tab) => {
-        const h = hostname(tab);
-        return h === "github.com" || h.endsWith(".github.com");
-      };
-    }
-    return () => true;
-  }
-  function primaryState(tab) {
-    if (tab.active) return "active";
-    if (tab.pinned) return "pinned";
-    if (tab.audible) return "audible";
-    if (tab.mutedInfo?.muted) return "muted";
-    if (tab.discarded) return "discarded";
-    if (tab.status === "loading") return "loading";
-    return "complete";
-  }
-  function stateRank(tab) {
-    return {
-      active: 0,
-      pinned: 1,
-      audible: 2,
-      muted: 3,
-      loading: 4,
-      complete: 5,
-      discarded: 6
-    }[primaryState(tab)] ?? 9;
-  }
-  function matchesState(tab, filter) {
-    if (filter === "all") return true;
-    if (filter === "active") return !!tab.active;
-    if (filter === "inactive") return !tab.active;
-    if (filter === "pinned") return !!tab.pinned;
-    if (filter === "unpinned") return !tab.pinned;
-    if (filter === "audible") return !!tab.audible;
-    if (filter === "muted") return !!tab.mutedInfo?.muted;
-    if (filter === "discarded") return !!tab.discarded;
-    if (filter === "loading") return tab.status === "loading";
-    if (filter === "complete") return tab.status === "complete" && !tab.discarded;
-    return true;
-  }
-  function matchesAccessed(tab, filter) {
-    const ts = Number(tab.lastAccessed || 0), age = ts ? Date.now() - ts : Infinity, h = 36e5, d = 864e5;
-    if (filter === "all") return true;
-    if (filter === "never") return !ts;
-    if (!ts) return false;
-    if (filter === "lt5m") return age <= 3e5;
-    if (filter === "lt1h") return age <= h;
-    if (filter === "lt24h") return age <= d;
-    if (filter === "gt24h") return age > d;
-    if (filter === "gt7d") return age > 7 * d;
-    if (filter === "gt30d") return age > 30 * d;
-    return true;
-  }
-  function sortTabs(result, sort) {
-    result.sort((a, b) => {
-      if (sort === "old") return (a.lastAccessed || 0) - (b.lastAccessed || 0);
-      if (sort === "state") {
-        return stateRank(a) - stateRank(b) || (b.lastAccessed || 0) - (a.lastAccessed || 0);
-      }
-      if (sort === "domain") {
-        return hostname(a).localeCompare(hostname(b)) || (a.title || "").localeCompare(b.title || "");
-      }
-      if (sort === "title") return (a.title || "").localeCompare(b.title || "");
-      if (sort === "window") return a.windowId - b.windowId || a.index - b.index;
-      return (b.lastAccessed || 0) - (a.lastAccessed || 0);
-    });
-  }
-  function applyFilters({ skipEditorSync = false } = {}) {
-    if (state.rendering) return;
-    const search = $("searchInput").value, regex = $("regexToggle").checked, field = $("fieldSelect").value, scope = $("scopeSelect").value, stateFilter = $("stateFilter").value, accessed = $("accessedFilter").value, sort = $("sortSelect").value, ignorePinned = $("ignorePinnedToggle").checked;
-    $("regexError").textContent = "";
-    let matcher = null;
-    if (search) {
-      if (regex) {
-        try {
-          matcher = new RegExp(search, "i");
-        } catch (err) {
-          $("regexError").textContent = err.message;
-          state.filteredTabs = [];
-          renderTabs();
-          saveUiFilterState();
-          if (!skipEditorSync) syncEditorFromUi();
-          return;
-        }
-      } else {
-        const needle = search.toLowerCase();
-        matcher = {
-          test: (value) => value.toLowerCase().includes(needle)
-        };
-      }
-    }
-    const ownUrl = browser.runtime.getURL("console.html");
-    const base = state.allTabs.filter((tab) => {
-      if (state.settings.hideSelf && tab.url === ownUrl) return false;
-      if (ignorePinned && tab.pinned) return false;
-      if (scope === "current" && tab.windowId !== state.currentWindowId) return false;
-      if (!matchesState(tab, stateFilter) || !matchesAccessed(tab, accessed)) return false;
-      if (matcher && !matcher.test(filterSearchValue(tab, field))) return false;
-      return true;
-    });
-    const pred = presetPredicate(state.activePreset, base), result = base.filter(pred);
-    sortTabs(result, sort);
-    state.filteredTabs = result;
-    const visibleIds = new Set(result.map((x) => x.id));
-    [
-      ...state.selectedIds
-    ].forEach((id) => {
-      if (!visibleIds.has(id)) state.selectedIds.delete(id);
-    });
-    renderTabs();
-    saveUiFilterState();
-    if (!skipEditorSync) syncEditorFromUi();
-  }
-  function saveUiFilterState() {
-    const prior = safeParse(localStorage.getItem(STORAGE_KEYS.ui), {});
-    saveLocal(STORAGE_KEYS.ui, {
-      ...prior,
-      consoleHidden: state.consoleHidden,
-      consoleWidth: state.consoleWidth,
-      ...getUiOptions(true)
-    });
-  }
-  function restoreUiFilterState() {
-    const saved = safeParse(localStorage.getItem(STORAGE_KEYS.ui), {});
-    setUiOptions(saved);
-    if (saved.preset) state.activePreset = saved.preset;
-  }
-  function setPreset(name) {
-    state.activePreset = name || "all";
-    document.querySelectorAll(".preset[data-preset]").forEach((btn) => btn.classList.toggle("active", btn.dataset.preset === state.activePreset));
-  }
-  function renderCustomPresets() {
-    const bar = $("customPresetBar");
-    bar.textContent = "";
-    state.customPresets.forEach((preset, index) => {
-      const button = document.createElement("button");
-      button.className = "preset";
-      button.textContent = preset.name;
-      button.title = `${t("save_preset")} \xB7 right-click: delete`;
-      button.onclick = () => {
-        setUiOptions(preset);
-        applyFilters();
-      };
-      button.oncontextmenu = (ev) => {
-        ev.preventDefault();
-        if (confirm(t("delete_preset", {
-          name: preset.name
-        }))) {
-          state.customPresets.splice(index, 1);
-          saveLocal(STORAGE_KEYS.presets, state.customPresets);
-          renderCustomPresets();
-        }
-      };
-      bar.appendChild(button);
-    });
-  }
-  async function savePreset() {
-    const name = prompt(t("preset_name"));
-    if (!name) return;
-    state.customPresets.push({
-      name: name.trim().slice(0, 40),
-      ...getUiOptions(true)
-    });
-    saveLocal(STORAGE_KEYS.presets, state.customPresets);
-    renderCustomPresets();
-  }
-  function relativeTime(timestamp) {
-    if (!timestamp) return "\u2014";
-    const diff = Math.max(0, Date.now() - timestamp), min = Math.floor(diff / 6e4);
-    if (min < 1) return t("now");
-    if (min < 60) return t("min", {
-      count: min
-    });
-    const hours = Math.floor(min / 60);
-    if (hours < 24) return t("hour", {
-      count: hours
-    });
-    return t("day", {
-      count: Math.floor(hours / 24)
-    });
-  }
-  function statePill(text, cls) {
-    const span = document.createElement("span");
-    span.className = `state-pill${cls ? ` ${cls}` : ""}`;
-    span.textContent = text;
-    return span;
-  }
-  function groupKey(tab, by) {
-    if (by === "domain") return hostname(tab) || "(no domain)";
-    if (by === "window") return String(tab.windowId);
-    if (by === "state") return primaryState(tab);
-    return "";
-  }
-  function groupLabel(key, by) {
-    if (by === "window") return t("window_group", {
-      id: key
-    });
-    if (by === "state") {
-      return t("state_group", {
-        state: t(key === "discarded" ? "discarded_state" : key)
-      });
-    }
-    return key;
-  }
-  function groupedTabs() {
-    const by = $("groupBySelect").value;
-    if (by === "none") return [
-      {
-        key: "",
-        tabs: state.filteredTabs
-      }
-    ];
-    const map = /* @__PURE__ */ new Map();
-    state.filteredTabs.forEach((tab) => {
-      const key = groupKey(tab, by);
-      if (!map.has(key)) map.set(key, []);
-      map.get(key).push(tab);
-    });
-    const groups = [
-      ...map
-    ].map(([key, tabs2]) => ({
-      key,
-      tabs: tabs2,
-      recent: Math.max(...tabs2.map((x) => x.lastAccessed || 0)),
-      old: Math.min(...tabs2.map((x) => x.lastAccessed || 0))
-    }));
-    const sort = $("groupSortSelect").value;
-    groups.sort((a, b) => sort === "count-desc" ? b.tabs.length - a.tabs.length || a.key.localeCompare(b.key) : sort === "count-asc" ? a.tabs.length - b.tabs.length || a.key.localeCompare(b.key) : sort === "recent" ? b.recent - a.recent : sort === "old" ? a.old - b.old : a.key.localeCompare(b.key));
-    return groups;
-  }
-  function createTabRow(tab) {
-    const row = document.createElement("div");
-    row.className = `tab-row${state.selectedIds.has(tab.id) ? " selected" : ""}`;
-    row.dataset.tabId = String(tab.id);
-    const main = document.createElement("div");
-    main.className = "tab-main";
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.checked = state.selectedIds.has(tab.id);
-    checkbox.className = "row-checkbox";
-    checkbox.dataset.tabId = String(tab.id);
-    main.appendChild(checkbox);
-    const text = document.createElement("div");
-    text.className = "tab-text";
-    const title = document.createElement("div");
-    title.className = "tab-title";
-    title.textContent = tab.title || t("untitled");
-    title.title = tab.title || "";
-    const url = document.createElement("div");
-    url.className = "tab-url";
-    url.textContent = tab.url || "";
-    url.title = tab.url || "";
-    text.append(title, url);
-    main.appendChild(text);
-    row.appendChild(main);
-    const flags = document.createElement("div");
-    flags.className = "tab-state";
-    if (tab.active) flags.appendChild(statePill(t("active"), "active"));
-    if (tab.pinned) flags.appendChild(statePill(t("pinned"), "pinned"));
-    if (tab.audible) flags.appendChild(statePill(t("audio"), "audio"));
-    if (tab.mutedInfo?.muted) flags.appendChild(statePill(t("muted"), ""));
-    if (tab.discarded) flags.appendChild(statePill(t("discarded_state"), "discarded"));
-    else if (tab.status === "loading") flags.appendChild(statePill(t("loading"), ""));
-    row.appendChild(flags);
-    const accessed = document.createElement("div");
-    accessed.className = "last-access";
-    accessed.textContent = relativeTime(tab.lastAccessed);
-    accessed.title = tab.lastAccessed ? new Date(tab.lastAccessed).toLocaleString() : "";
-    row.appendChild(accessed);
-    const actions = document.createElement("div");
-    actions.className = "row-actions";
-    const activateBtn = document.createElement("button");
-    activateBtn.className = "row-icon-btn";
-    activateBtn.textContent = "\u2197";
-    activateBtn.title = t("activate_tab");
-    activateBtn.dataset.rowAction = "activate";
-    activateBtn.dataset.tabId = String(tab.id);
-    const closeBtn = document.createElement("button");
-    closeBtn.className = "row-icon-btn close";
-    closeBtn.textContent = "\xD7";
-    closeBtn.title = t("close_tab");
-    closeBtn.dataset.rowAction = "close";
-    closeBtn.dataset.tabId = String(tab.id);
-    actions.append(activateBtn, closeBtn);
-    row.appendChild(actions);
-    row.addEventListener("dblclick", (ev) => {
-      if ([
-        "INPUT",
-        "BUTTON"
-      ].includes(ev.target.tagName)) return;
-      activateTab(tab).catch((err) => appendEntry("error", err));
-    });
-    return row;
-  }
-  function renderTabs() {
-    state.rendering = true;
-    const list = $("tabList");
-    list.textContent = "";
-    [
-      ...state.selectedIds
-    ].forEach((id) => {
-      if (!state.allTabs.some((x) => x.id === id)) state.selectedIds.delete(id);
-    });
-    if (!state.filteredTabs.length) {
-      const empty = document.createElement("div");
-      empty.className = "empty-state";
-      empty.textContent = t("no_match");
-      list.appendChild(empty);
-    } else {
-      const by = $("groupBySelect").value;
-      groupedTabs().forEach((group) => {
-        if (by === "none") group.tabs.forEach((tab) => list.appendChild(createTabRow(tab)));
-        else {
-          const block = document.createElement("section");
-          block.className = "group-block";
-          const head = document.createElement("div");
-          head.className = "group-header";
-          const name = document.createElement("span");
-          name.textContent = groupLabel(group.key, by);
-          const meta = document.createElement("span");
-          meta.className = "group-meta";
-          meta.textContent = t("group_count", {
-            count: group.tabs.length
-          });
-          head.append(name, meta);
-          block.appendChild(head);
-          group.tabs.forEach((tab) => block.appendChild(createTabRow(tab)));
-          list.appendChild(block);
-        }
-      });
-    }
-    const selectedVisible = state.filteredTabs.filter((x) => state.selectedIds.has(x.id)).length;
-    $("selectionLabel").textContent = t("selected_shown", {
-      selected: state.selectedIds.size,
-      shown: state.filteredTabs.length
-    });
-    $("selectAllCheckbox").checked = state.filteredTabs.length > 0 && selectedVisible === state.filteredTabs.length;
-    $("selectAllCheckbox").indeterminate = selectedVisible > 0 && selectedVisible < state.filteredTabs.length;
-    $("tabTotalBadge").textContent = t("tabs_count", {
-      count: state.allTabs.length
-    });
-    document.querySelectorAll(".bulk-actions button").forEach((button) => {
-      button.disabled = button.dataset.action === "close-shown" ? state.filteredTabs.length === 0 : state.selectedIds.size === 0;
-    });
-    state.rendering = false;
-    setStatus(t("shown_total", {
-      shown: state.filteredTabs.length,
-      total: state.allTabs.length
-    }));
-  }
-  function getSelectedTabs() {
-    return state.allTabs.filter((tab) => state.selectedIds.has(tab.id));
-  }
-  async function refreshTabs() {
-    try {
-      const win = await browser.windows.getCurrent();
-      state.currentWindowId = win.id;
-      state.allTabs = await browser.tabs.query({});
-      applyFilters();
-      return state.allTabs.slice();
-    } catch (err) {
-      appendEntry("error", err);
-      setStatus(t("refresh_failed"));
-      throw err;
-    }
-  }
-  function scheduleRefresh(delay) {
-    if (!state.settings.autoRefresh && delay !== 30 && delay !== 80) return;
-    clearTimeout(state.refreshTimer);
-    state.refreshTimer = setTimeout(() => refreshTabs().catch(() => {
-    }), delay || 180);
-  }
-  function scheduleSearch() {
-    clearTimeout(state.searchTimer);
-    state.searchTimer = setTimeout(() => applyFilters(), 180);
-  }
-  async function performBulkAction(action) {
-    if (action === "close-shown") {
-      const shown = state.filteredTabs.slice();
-      if (!shown.length) return;
-      if (state.settings.confirmClose && !confirm(t("close_shown_confirm", {
-        count: shown.length
-      }))) return;
-      try {
-        await closeTabs(shown);
-        state.selectedIds.clear();
-        await refreshTabs();
-      } catch (err) {
-        appendEntry("error", err);
-      }
-      return;
-    }
-    const selected = getSelectedTabs();
-    if (!selected.length) return;
-    if (action === "close" && state.settings.confirmClose && !confirm(t("close_selected_confirm", {
+});
+var confirmClose = (message) => !state.settings.confirmClose || confirm(message);
+async function closeShown() {
+  const shown = state.filteredTabs.slice();
+  if (!shown.length || !confirmClose(t("close_shown_confirm", {
+    count: shown.length
+  }))) return;
+  await actions.close(shown);
+  state.selectedIds.clear();
+  await refreshTabs();
+}
+async function performBulkAction(action) {
+  if (action === "close-shown") return closeShown();
+  const selected = selectedTabs();
+  if (!selected.length) return;
+  if (action === "close") {
+    if (!confirmClose(t("close_selected_confirm", {
       count: selected.length
     }))) return;
-    try {
-      if (action === "close") await closeTabs(selected);
-      if (action === "discard") await discardTabs(selected);
-      if (action === "reload") await reloadTabs(selected);
-      if (action === "pin") await pinTabs(selected);
-      if (action === "unpin") await unpinTabs(selected);
-      if (action === "mute") await muteTabs(selected);
-      if (action === "unmute") await unmuteTabs(selected);
-      if (action === "close") state.selectedIds.clear();
-      await refreshTabs();
-    } catch (err) {
-      appendEntry("error", err);
-    }
+    await actions.close(selected);
+    state.selectedIds.clear();
+  } else {
+    await actions[action](selected);
   }
-  async function performRowAction(action, id) {
-    const tab = state.allTabs.find((x) => x.id === id);
-    if (!tab) return;
-    if (action === "activate") return activateTab(tab);
-    if (action === "close") {
-      if (state.settings.confirmClose && !confirm(t("close_one_confirm", {
-        title: tab.title || t("untitled")
-      }))) return;
-      await closeTabs(tab);
-      state.selectedIds.delete(id);
-      await refreshTabs();
-    }
+  await refreshTabs();
+}
+async function performRowAction(action, id) {
+  const tab = state.allTabs.find((x) => x.id === id);
+  if (!tab) return;
+  if (action === "activate") {
+    await actions.activate(tab);
+  } else if (action === "close") {
+    if (!confirmClose(t("close_one_confirm", {
+      title: tab.title || t("untitled")
+    }))) return;
+    await actions.close(tab);
+    state.selectedIds.delete(id);
+    await refreshTabs();
   }
-  function applySettingsToUi() {
-    $("confirmCloseSetting").checked = state.settings.confirmClose;
-    $("hideSelfSetting").checked = state.settings.hideSelf;
-    $("autoRefreshSetting").checked = state.settings.autoRefresh;
-    $("themeSelect").value = state.settings.theme;
-  }
-  function saveSettingsFromUi() {
-    state.settings.confirmClose = $("confirmCloseSetting").checked;
-    state.settings.hideSelf = $("hideSelfSetting").checked;
-    state.settings.autoRefresh = $("autoRefreshSetting").checked;
-    state.settings.theme = $("themeSelect").value;
-    saveLocal(STORAGE_KEYS.settings, state.settings);
-    applyTheme();
-    applyFilters();
-  }
-  function applyConsoleLayout() {
-    $("app").style.setProperty("--console-width", state.consoleWidth);
-    $("app").classList.toggle("console-hidden", state.consoleHidden);
-    $("showConsoleBtn").classList.toggle("hidden", !state.consoleHidden);
-    saveUiFilterState();
-  }
-  function setConsoleHidden(hidden) {
-    state.consoleHidden = !!hidden;
-    applyConsoleLayout();
-    setTimeout(() => editor.refresh(), 0);
-  }
-  function initSplitter() {
-    const splitter = $("splitter");
-    let dragging = false;
-    splitter.addEventListener("mousedown", (ev) => {
-      dragging = true;
-      splitter.classList.add("dragging");
-      ev.preventDefault();
-    });
-    window.addEventListener("mousemove", (ev) => {
-      if (!dragging) return;
-      const min = 320, max = Math.max(min, window.innerWidth - 430), width = Math.max(min, Math.min(max, ev.clientX));
-      state.consoleWidth = `${width}px`;
-      $("app").style.setProperty("--console-width", state.consoleWidth);
-      editor.refresh();
-    });
-    window.addEventListener("mouseup", () => {
-      if (!dragging) return;
-      dragging = false;
-      splitter.classList.remove("dragging");
-      saveUiFilterState();
-    });
-  }
-  function bindEvents() {
-    $("runBtn").onclick = runEditor;
-    $("clearConsoleBtn").onclick = clearConsole;
-    $("helpBtn").onclick = () => $("helpDialog").showModal();
-    $("settingsBtn").onclick = () => {
-      applySettingsToUi();
-      $("settingsDialog").showModal();
-    };
-    $("refreshBtn").onclick = () => refreshTabs().catch(() => {
-    });
-    $("hideConsoleBtn").onclick = () => setConsoleHidden(true);
-    $("showConsoleBtn").onclick = () => setConsoleHidden(false);
-    $("savePresetBtn").onclick = savePreset;
-    $("syncQueryBtn").onclick = () => syncEditorFromUi(true);
-    document.querySelectorAll("[data-dialog-close]").forEach((button) => button.addEventListener("click", () => button.closest("dialog")?.close()));
-    $("searchInput").addEventListener("input", scheduleSearch);
-    [
-      "fieldSelect",
-      "scopeSelect",
-      "stateFilter",
-      "accessedFilter",
-      "sortSelect",
-      "groupBySelect",
-      "groupSortSelect",
-      "regexToggle",
-      "ignorePinnedToggle"
-    ].forEach((id) => $(id).addEventListener("change", () => applyFilters()));
-    $("presetBar").onclick = (ev) => {
-      const button = ev.target.closest("[data-preset]");
-      if (!button) return;
-      setPreset(button.dataset.preset);
+}
+function renderCustomPresets() {
+  $("customPresetBar").replaceChildren(...state.customPresets.map((preset, index) => {
+    const button = document.createElement("button");
+    button.className = "preset";
+    button.textContent = preset.name;
+    button.title = `${preset.name} \xB7 ${t("preset_delete_hint")}`;
+    button.onclick = () => {
+      writeFilters(preset);
       applyFilters();
     };
-    $("selectAllCheckbox").onchange = function() {
-      if (this.checked) state.filteredTabs.forEach((x) => state.selectedIds.add(x.id));
-      else state.filteredTabs.forEach((x) => state.selectedIds.delete(x.id));
-      renderTabs();
-    };
-    $("tabList").addEventListener("change", (ev) => {
-      if (!ev.target.classList.contains("row-checkbox")) return;
-      const id = Number(ev.target.dataset.tabId);
-      ev.target.checked ? state.selectedIds.add(id) : state.selectedIds.delete(id);
-      renderTabs();
-    });
-    $("tabList").addEventListener("click", (ev) => {
-      const button = ev.target.closest("[data-row-action]");
-      if (button) {
-        performRowAction(button.dataset.rowAction, Number(button.dataset.tabId)).catch((err) => appendEntry("error", err));
-      }
-    });
-    document.querySelector(".bulk-actions").onclick = (ev) => {
-      if (ev.target.dataset.action) performBulkAction(ev.target.dataset.action);
-    };
-    [
-      "confirmCloseSetting",
-      "hideSelfSetting",
-      "autoRefreshSetting",
-      "themeSelect"
-    ].forEach((id) => $(id).addEventListener("change", saveSettingsFromUi));
-    $("themeBtn").onclick = () => {
-      state.settings.theme = state.settings.theme === "dark" ? "light" : "dark";
-      saveLocal(STORAGE_KEYS.settings, state.settings);
-      applyTheme();
-      applySettingsToUi();
-    };
-    $("languageSelect").onchange = () => {
-      state.settings.language = $("languageSelect").value;
-      saveLocal(STORAGE_KEYS.settings, state.settings);
-      applyI18n();
+    button.oncontextmenu = (ev) => {
+      ev.preventDefault();
+      if (!confirm(t("delete_preset", {
+        name: preset.name
+      }))) return;
+      state.customPresets.splice(index, 1);
+      storage.savePresets(state.customPresets);
       renderCustomPresets();
     };
-    $("resetSettingsBtn").onclick = () => {
-      if (!confirm(t("reset_confirm"))) return;
-      Object.values(STORAGE_KEYS).forEach((key) => localStorage.removeItem(key));
-      location.reload();
-    };
-    browser.tabs.onCreated.addListener(() => scheduleRefresh(180));
-    browser.tabs.onRemoved.addListener(() => scheduleRefresh(180));
-    browser.tabs.onMoved.addListener(() => scheduleRefresh(180));
-    browser.tabs.onAttached.addListener(() => scheduleRefresh(180));
-    browser.tabs.onDetached.addListener(() => scheduleRefresh(180));
-    browser.tabs.onActivated.addListener(() => scheduleRefresh(180));
-    browser.tabs.onUpdated.addListener(() => scheduleRefresh(260));
-    window.addEventListener("error", (event) => {
-      if (event.error) appendEntry("error", event.error);
-    });
-    window.addEventListener("unhandledrejection", (event) => appendEntry("error", event.reason instanceof Error ? event.reason : new Error(String(event.reason))));
-  }
-  restoreUiFilterState();
-  setPreset(state.activePreset);
-  renderCustomPresets();
-  applySettingsToUi();
-  applyTheme();
-  applyConsoleLayout();
-  initSplitter();
-  bindEvents();
-  updateProblemCount();
-  applyI18n();
-  refreshTabs().then(() => {
-    syncEditorFromUi(true);
-    appendEntry("info", [
-      t("ready_console", {
-        count: state.allTabs.length
-      })
-    ]);
-  }).catch(() => {
+    return button;
+  }));
+  markActiveView();
+}
+function markActiveView() {
+  const current = readFilters();
+  const matches = (preset) => Object.keys(current).every((key) => preset[key] === void 0 || preset[key] === current[key]);
+  const index = state.customPresets.findIndex(matches);
+  const custom = $("customPresetBar").children;
+  for (let i = 0; i < custom.length; i++) custom[i].classList.toggle("active", i === index);
+  if (index >= 0) {
+    $("presetBar").querySelectorAll(".preset").forEach((btn) => btn.classList.remove("active"));
+  } else setPreset(state.activePreset);
+}
+function savePreset() {
+  const name = prompt(t("preset_name"))?.trim();
+  if (!name) return;
+  state.customPresets.push({
+    ...readFilters(),
+    name: name.slice(0, 40)
   });
-})();
+  storage.savePresets(state.customPresets);
+  renderCustomPresets();
+}
+var SETTING_CHECKBOXES = {
+  confirmClose: "confirmCloseSetting",
+  hideSelf: "hideSelfSetting",
+  autoRefresh: "autoRefreshSetting"
+};
+function showSettings() {
+  for (const [key, id] of Object.entries(SETTING_CHECKBOXES)) {
+    $(id).checked = state.settings[key];
+  }
+  $("themeSelect").value = state.settings.theme;
+}
+function saveSettingsFromUi() {
+  for (const [key, id] of Object.entries(SETTING_CHECKBOXES)) {
+    state.settings[key] = $(id).checked;
+  }
+  const theme = $("themeSelect").value;
+  state.settings.theme = theme === "dark" || theme === "light" ? theme : "system";
+  storage.saveSettings(state.settings);
+  applyTheme();
+  applyFilters();
+}
+function applyTheme() {
+  document.documentElement.dataset.theme = state.settings.theme;
+  $("themeSelect").value = state.settings.theme;
+}
+function applyI18n() {
+  document.documentElement.lang = state.settings.language;
+  $("languageSelect").value = state.settings.language;
+  const translateAttr = (attr, apply) => document.querySelectorAll(`[${attr}]`).forEach((el2) => apply(el2, t(el2.getAttribute(attr))));
+  translateAttr("data-i18n", (el2, text) => el2.textContent = text);
+  translateAttr("data-i18n-title", (el2, text) => el2.title = text);
+  translateAttr("data-i18n-aria-label", (el2, text) => el2.setAttribute("aria-label", text));
+  translateAttr("data-i18n-placeholder", (el2, text) => {
+    ;
+    el2.placeholder = text;
+  });
+  updateProblemCount();
+  repl.updateLinkState();
+  renderTabs();
+  renderCustomPresets();
+}
+var MIN_CONSOLE_HEIGHT = 140;
+var MIN_LIST_HEIGHT = 120;
+function clampConsoleHeight(height) {
+  const app = $("app");
+  const listTop = $("tabList").getBoundingClientRect().top - app.getBoundingClientRect().top;
+  const statusHeight = document.querySelector(".status-bar")?.offsetHeight ?? 0;
+  const max = globalThis.innerHeight - listTop - MIN_LIST_HEIGHT - statusHeight - 5;
+  return Math.round(Math.max(MIN_CONSOLE_HEIGHT, Math.min(max, height)));
+}
+function applyConsoleLayout() {
+  $("app").style.setProperty("--console-height", `${clampConsoleHeight(state.consoleHeight)}px`);
+  $("app").classList.toggle("console-hidden", state.consoleHidden);
+  $("showConsoleBtn").setAttribute("aria-pressed", String(!state.consoleHidden));
+}
+function setConsoleHidden(hidden) {
+  state.consoleHidden = hidden;
+  applyConsoleLayout();
+  saveUiState();
+  setTimeout(() => {
+    repl.refresh();
+    if (hidden) $("tabList").focus();
+    else repl.focus();
+  }, 0);
+}
+function initSplitter() {
+  const splitter = $("splitter");
+  let dragging = false;
+  splitter.addEventListener("mousedown", (ev) => {
+    dragging = true;
+    splitter.classList.add("dragging");
+    ev.preventDefault();
+  });
+  globalThis.addEventListener("mousemove", (ev) => {
+    if (!dragging) return;
+    const statusHeight = document.querySelector(".status-bar")?.offsetHeight ?? 0;
+    state.consoleHeight = clampConsoleHeight(globalThis.innerHeight - ev.clientY - statusHeight);
+    $("app").style.setProperty("--console-height", `${state.consoleHeight}px`);
+    repl.refresh();
+  });
+  globalThis.addEventListener("resize", applyConsoleLayout);
+  globalThis.addEventListener("mouseup", () => {
+    if (!dragging) return;
+    dragging = false;
+    splitter.classList.remove("dragging");
+    saveUiState();
+  });
+}
+function focusRow(id) {
+  state.focusedId = id;
+  renderTabs();
+  scrollFocusedIntoView();
+}
+function shownFocusedId() {
+  const id = state.focusedId;
+  return id != null && displayOrder().includes(id) ? id : null;
+}
+function clickRow(id, ev, checkbox2) {
+  state.rangeBase = null;
+  if (ev.shiftKey) {
+    const order = displayOrder();
+    if (state.anchorId == null || !order.includes(state.anchorId)) state.anchorId = id;
+    selectRange(state.selectedIds, order, state.anchorId, id, checkbox2?.checked ?? true);
+  } else {
+    if (checkbox2 || ev.metaKey || ev.ctrlKey) {
+      if (state.selectedIds.has(id)) state.selectedIds.delete(id);
+      else state.selectedIds.add(id);
+    }
+    state.anchorId = id;
+  }
+  focusRow(id);
+}
+async function closeFocused() {
+  const id = shownFocusedId();
+  if (id == null) return;
+  const order = displayOrder();
+  const next = order[order.indexOf(id) + 1] ?? order[order.indexOf(id) - 1] ?? null;
+  await performRowAction("close", id);
+  if (!state.allTabs.some((tab) => tab.id === id)) focusRow(next);
+}
+function activateFocused() {
+  const id = shownFocusedId();
+  if (id != null) reportErrors(actions.activate)(id);
+}
+function toggleFocused() {
+  const id = shownFocusedId();
+  if (id == null) return;
+  if (state.selectedIds.has(id)) state.selectedIds.delete(id);
+  else state.selectedIds.add(id);
+  state.anchorId = id;
+  state.rangeBase = null;
+  renderTabs();
+}
+function moveRow(delta, extend) {
+  const order = displayOrder();
+  const current = shownFocusedId();
+  const next = moveFocus(order, current, delta);
+  if (next == null) return;
+  if (extend) {
+    if (state.anchorId == null || !order.includes(state.anchorId)) state.anchorId = current ?? next;
+    state.rangeBase ??= new Set(state.selectedIds);
+    state.selectedIds = extendRange(state.rangeBase, order, state.anchorId, next);
+  } else {
+    state.anchorId = next;
+    state.rangeBase = null;
+  }
+  focusRow(next);
+}
+function isTextTarget(el2) {
+  return !!el2?.closest?.("input:not([type=checkbox]), textarea, select, .CodeMirror, dialog, #consoleOutput");
+}
+function isControlTarget(el2) {
+  return !!el2?.closest?.("button, a, label, input[type=checkbox]");
+}
+function onKeyDown(ev) {
+  if (ev.key === "`" && ev.ctrlKey) {
+    ev.preventDefault();
+    setConsoleHidden(!state.consoleHidden);
+    return;
+  }
+  const search = $("searchInput");
+  if (ev.target === search) {
+    if (ev.key === "Escape") {
+      ev.preventDefault();
+      if (search.value) {
+        search.value = "";
+        applyFilters();
+      } else $("tabList").focus();
+    } else if (ev.key === "ArrowDown" || ev.key === "Enter") {
+      ev.preventDefault();
+      if (searchTimer !== void 0) {
+        clearTimeout(searchTimer);
+        searchTimer = void 0;
+        applyFilters();
+      }
+      $("tabList").focus();
+      if (shownFocusedId() == null) moveRow(1, false);
+    }
+    return;
+  }
+  const target = ev.target;
+  if (isTextTarget(target) || ev.altKey) return;
+  const mod = ev.metaKey || ev.ctrlKey;
+  const key = ev.key;
+  if (isControlTarget(target) && (key === "Enter" || key === " " || mod)) return;
+  if (mod && key.toLowerCase() === "a") {
+    ev.preventDefault();
+    state.filteredTabs.forEach((tab) => state.selectedIds.add(tab.id));
+    renderTabs();
+    return;
+  }
+  if (mod) return;
+  const handlers = {
+    "/": () => {
+      search.focus();
+      search.select();
+    },
+    "?": () => $("helpDialog").showModal(),
+    j: () => moveRow(1, false),
+    J: () => moveRow(1, true),
+    ArrowDown: () => moveRow(1, ev.shiftKey),
+    k: () => moveRow(-1, false),
+    K: () => moveRow(-1, true),
+    ArrowUp: () => moveRow(-1, ev.shiftKey),
+    Home: () => moveRow(-Infinity, ev.shiftKey),
+    g: () => moveRow(-Infinity, false),
+    End: () => moveRow(Infinity, ev.shiftKey),
+    G: () => moveRow(Infinity, false),
+    x: toggleFocused,
+    " ": toggleFocused,
+    Enter: activateFocused,
+    o: activateFocused,
+    d: () => reportErrors(closeFocused)(),
+    Delete: () => handlers.d(),
+    Escape: () => {
+      if (!state.selectedIds.size) return;
+      state.selectedIds.clear();
+      renderTabs();
+    }
+  };
+  const handler = handlers[key];
+  if (!handler) return;
+  ev.preventDefault();
+  handler();
+}
+var reportErrors = (fn) => (...args) => {
+  fn(...args).catch(printError);
+};
+function bindEvents() {
+  $("runBtn").onclick = repl.run;
+  $("clearConsoleBtn").onclick = clearConsole;
+  $("helpBtn").onclick = () => $("helpDialog").showModal();
+  $("settingsBtn").onclick = () => {
+    showSettings();
+    $("settingsDialog").showModal();
+  };
+  $("refreshBtn").onclick = () => refreshTabs().catch(() => {
+  });
+  $("hideConsoleBtn").onclick = () => setConsoleHidden(true);
+  $("showConsoleBtn").onclick = () => setConsoleHidden(!state.consoleHidden);
+  $("savePresetBtn").onclick = savePreset;
+  $("syncQueryBtn").onclick = () => repl.syncFromUi(true);
+  document.querySelectorAll("[data-dialog-close]").forEach((button) => button.addEventListener("click", () => button.closest("dialog")?.close()));
+  $("searchInput").addEventListener("input", scheduleSearch);
+  for (const id of [
+    ...Object.values(SELECT_IDS),
+    ...Object.values(CHECKBOX_IDS)
+  ]) {
+    $(id).addEventListener("change", () => applyFilters());
+  }
+  $("presetBar").onclick = (ev) => {
+    const button = ev.target.closest("[data-preset]");
+    if (!button) return;
+    setPreset(button.dataset.preset);
+    applyFilters();
+  };
+  const selectAll = $("selectAllCheckbox");
+  selectAll.onchange = () => {
+    for (const tab of state.filteredTabs) {
+      if (selectAll.checked) state.selectedIds.add(tab.id);
+      else state.selectedIds.delete(tab.id);
+    }
+    renderTabs();
+  };
+  const tabList = $("tabList");
+  tabList.addEventListener("click", (ev) => {
+    const target = ev.target;
+    const button = target.closest("[data-row-action]");
+    if (button) {
+      reportErrors(performRowAction)(button.dataset.rowAction, Number(button.dataset.tabId));
+      return;
+    }
+    const row = target.closest(".tab-row");
+    if (!row) return;
+    const checkbox2 = target.closest(".row-checkbox");
+    if (!checkbox2 && target.closest(".row-check")) return;
+    if (ev.detail === 2 && !checkbox2 && !ev.shiftKey && !ev.metaKey && !ev.ctrlKey) {
+      reportErrors(actions.activate)(Number(row.dataset.tabId));
+      return;
+    }
+    clickRow(Number(row.dataset.tabId), ev, checkbox2);
+  });
+  tabList.addEventListener("focus", () => {
+    if (state.focusedId == null || !displayOrder().includes(state.focusedId)) {
+      focusRow(displayOrder()[0] ?? null);
+    }
+  });
+  tabList.addEventListener("mousedown", (ev) => {
+    if (ev.shiftKey) ev.preventDefault();
+  });
+  $("selectionBar").onclick = (ev) => {
+    const action = ev.target.closest("[data-action]")?.dataset.action;
+    if (action) reportErrors(performBulkAction)(action);
+  };
+  $("closeShownBtn").onclick = () => reportErrors(performBulkAction)("close-shown");
+  $("clearSelectionBtn").onclick = () => {
+    state.selectedIds.clear();
+    renderTabs();
+  };
+  document.addEventListener("keydown", onKeyDown);
+  for (const id of [
+    ...Object.values(SETTING_CHECKBOXES),
+    "themeSelect"
+  ]) {
+    $(id).addEventListener("change", saveSettingsFromUi);
+  }
+  $("languageSelect").onchange = () => {
+    state.settings.language = $("languageSelect").value === "ko" ? "ko" : "en";
+    storage.saveSettings(state.settings);
+    applyI18n();
+  };
+  $("resetSettingsBtn").onclick = () => {
+    if (!confirm(t("reset_confirm"))) return;
+    storage.clear();
+    location.reload();
+  };
+  const onTabEvent = () => scheduleRefresh(TAB_EVENT_REFRESH_MS);
+  for (const event of [
+    browser.tabs.onCreated,
+    browser.tabs.onRemoved,
+    browser.tabs.onMoved,
+    browser.tabs.onAttached,
+    browser.tabs.onDetached,
+    browser.tabs.onActivated
+  ]) {
+    ;
+    event.addListener(onTabEvent);
+  }
+  browser.tabs.onUpdated.addListener(() => scheduleRefresh(TAB_UPDATED_REFRESH_MS));
+  globalThis.addEventListener("error", (event) => {
+    if (event.error) printError(event.error);
+  });
+  globalThis.addEventListener("unhandledrejection", (event) => {
+    printError(event.reason instanceof Error ? event.reason : new Error(String(event.reason)));
+  });
+}
+var savedFilters = storage.ui();
+writeFilters(savedFilters);
+setPreset(savedFilters.preset ?? state.activePreset);
+applyTheme();
+applyConsoleLayout();
+initSplitter();
+bindEvents();
+applyI18n();
+refreshTabs().then(() => {
+  repl.syncFromUi(true);
+  print("info", [
+    t("ready_console", {
+      count: state.allTabs.length
+    })
+  ]);
+}).catch(() => {
+});

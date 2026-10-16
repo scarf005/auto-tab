@@ -27,7 +27,8 @@
   },
   "applications": {
     "gecko": {
-      "id": "tab-console@local"
+      "id": "tab-console@local",
+      "strict_min_version": "121.0"
     }
   }
 }
