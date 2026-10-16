@@ -196,7 +196,7 @@ function renderCustomPresets() {
       const button = document.createElement("button")
       button.className = "preset"
       button.textContent = preset.name
-      button.title = `${t("save_preset")} · right-click: delete`
+      button.title = `${preset.name} · ${t("preset_delete_hint")}`
       button.onclick = () => {
         writeFilters(preset)
         applyFilters()

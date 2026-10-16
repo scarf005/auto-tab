@@ -86,7 +86,7 @@ function tabRow(tab: Tab) {
 const STATE_LABELS: Record<PrimaryState, TranslationKey> = {
   active: "active",
   pinned: "pinned",
-  audible: "audible" as TranslationKey,
+  audible: "audio",
   muted: "muted",
   discarded: "discarded_state",
   loading: "loading",

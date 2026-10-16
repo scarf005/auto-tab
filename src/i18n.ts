@@ -135,6 +135,7 @@ const translations = {
     first100: "처음 100행 표시",
     window_group: "창 {id}",
     state_group: "상태: {state}",
+    preset_delete_hint: "우클릭: 삭제",
   },
   en: {
     sync_query: "UI → Query",
@@ -271,6 +272,7 @@ const translations = {
     first100: "first 100 shown",
     window_group: "Window {id}",
     state_group: "State: {state}",
+    preset_delete_hint: "right-click: delete",
   },
 }
 
