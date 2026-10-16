@@ -1,0 +1,33 @@
+{
+  "manifest_version": 2,
+  "name": "Tab Console",
+  "version": "0.2.0",
+  "description": "A local Firefox tab REPL and visual tab manager.",
+  "permissions": ["tabs", "storage"],
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  },
+  "browser_action": {
+    "default_title": "Open Tab Console",
+    "default_icon": "icon.svg"
+  },
+  "commands": {
+    "open-tab-console": {
+      "suggested_key": {
+        "default": "Alt+Shift+T"
+      },
+      "description": "Open or focus Tab Console"
+    }
+  },
+  "icons": {
+    "48": "icon.svg",
+    "96": "icon.svg"
+  },
+  "applications": {
+    "gecko": {
+      "id": "tab-console@local"
+    }
+  }
+}

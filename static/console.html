@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="ko" data-theme="light">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tab Console</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main id="app" class="app-shell">
+      <section id="consolePane" class="pane console-pane" aria-label="JavaScript console">
+        <header class="pane-header">
+          <div class="brand">
+            <img src="icon.svg" width="24" height="24" alt="">
+            <strong>Tab Console</strong>
+            <span class="badge">MV2</span>
+          </div>
+          <div class="header-actions">
+            <button id="syncQueryBtn" class="ghost-btn" data-i18n-title="sync_query_title"
+              data-i18n="sync_query">UI → Query</button>
+            <button id="helpBtn" class="ghost-btn" data-i18n-title="help">?</button>
+            <button id="clearConsoleBtn" class="ghost-btn" data-i18n="clear">Clear</button>
+            <button id="hideConsoleBtn" class="ghost-btn" data-i18n-title="hide_console_title"
+              data-i18n="hide_console">Hide console</button>
+          </div>
+        </header>
+
+        <div id="consoleOutput" class="console-output" aria-live="polite"></div>
+
+        <div class="editor-wrap">
+          <div class="editor-topline">
+            <span class="prompt">›</span>
+            <span id="queryLinkState" class="editor-hint"></span>
+            <span class="editor-hint"
+              data-i18n="editor_shortcuts">Ctrl+Enter run · Ctrl+Space complete · Alt+↑/↓ history</span>
+          </div>
+          <textarea id="codeEditor" spellcheck="false"></textarea>
+          <div class="editor-actions">
+            <span id="problemCount" class="problem-count">0 errors</span>
+            <button id="runBtn" class="primary-btn" data-i18n="run">Run</button>
+          </div>
+        </div>
+      </section>
+
+      <div id="splitter" class="splitter" role="separator" aria-orientation="vertical"></div>
+
+      <section id="explorerPane" class="pane explorer-pane" aria-label="Tab explorer">
+        <header class="pane-header">
+          <div class="brand compact">
+            <strong data-i18n="tab_explorer">Tab Explorer</strong>
+            <span id="tabTotalBadge" class="badge">0 tabs</span>
+          </div>
+          <div class="header-actions">
+            <button id="showConsoleBtn" class="ghost-btn hidden"
+              data-i18n="show_console">Show console</button>
+            <button id="themeBtn" class="ghost-btn" data-i18n-title="theme_toggle">☀</button>
+            <select id="languageSelect" class="compact-select" aria-label="Language">
+              <option value="ko">한국어</option>
+              <option value="en">English</option>
+            </select>
+            <button id="refreshBtn" class="ghost-btn" data-i18n="refresh">Refresh</button>
+            <button id="settingsBtn" class="ghost-btn" data-i18n="settings">Settings</button>
+          </div>
+        </header>
+
+        <section class="filter-panel">
+          <div class="search-row">
+            <input id="searchInput" type="text" autocomplete="off"
+              data-i18n-placeholder="search_placeholder" placeholder="Search title / URL">
+            <label class="check-chip"
+              title="Regular expression"><input id="regexToggle" type="checkbox"> Regex</label>
+            <select id="fieldSelect">
+              <option value="all" data-i18n="field_all">Title + URL</option>
+              <option value="title" data-i18n="field_title">Title</option>
+              <option value="url" data-i18n="field_url">URL</option>
+              <option value="host" data-i18n="field_host">Domain</option>
+            </select>
+          </div>
+          <div id="regexError" class="filter-error"></div>
+
+          <div class="filter-grid">
+            <label><span data-i18n="scope">Scope</span>
+            <select id="scopeSelect">
+              <option value="all" data-i18n="scope_all">All windows</option>
+              <option value="current" data-i18n="scope_current">Current window</option>
+            </select>
+          </label>
+            <label><span data-i18n="state">State</span>
+            <select id="stateFilter">
+              <option value="all" data-i18n="state_all">Any state</option>
+              <option value="active" data-i18n="state_active">Active</option>
+              <option value="inactive" data-i18n="state_inactive">Inactive</option>
+              <option value="pinned" data-i18n="state_pinned">Pinned</option>
+              <option value="unpinned" data-i18n="state_unpinned">Unpinned</option>
+              <option value="audible" data-i18n="state_audible">Audible</option>
+              <option value="muted" data-i18n="state_muted">Muted</option>
+              <option value="discarded" data-i18n="state_discarded">Discarded</option>
+              <option value="loading" data-i18n="state_loading">Loading</option>
+              <option value="complete" data-i18n="state_complete">Complete</option>
+            </select>
+          </label>
+            <label><span data-i18n="accessed">Accessed</span>
+            <select id="accessedFilter">
+              <option value="all" data-i18n="accessed_all">Any time</option>
+              <option value="lt5m" data-i18n="accessed_lt5m">Within 5 min</option>
+              <option value="lt1h" data-i18n="accessed_lt1h">Within 1 h</option>
+              <option value="lt24h" data-i18n="accessed_lt24h">Within 24 h</option>
+              <option value="gt24h" data-i18n="accessed_gt24h">Older than 24 h</option>
+              <option value="gt7d" data-i18n="accessed_gt7d">Older than 7 d</option>
+              <option value="gt30d" data-i18n="accessed_gt30d">Older than 30 d</option>
+              <option value="never" data-i18n="accessed_never">No timestamp</option>
+            </select>
+          </label>
+            <label><span data-i18n="sort">Sort</span>
+            <select id="sortSelect">
+              <option value="recent" data-i18n="sort_recent">Accessed: recent</option>
+              <option value="old" data-i18n="sort_old">Accessed: old</option>
+              <option value="state" data-i18n="sort_state">State</option>
+              <option value="domain" data-i18n="sort_domain">Domain</option>
+              <option value="title" data-i18n="sort_title">Title</option>
+              <option value="window" data-i18n="sort_window">Window / index</option>
+            </select>
+          </label>
+            <label><span data-i18n="group_by">Group by</span>
+            <select id="groupBySelect">
+              <option value="none" data-i18n="group_none">None</option>
+              <option value="domain" data-i18n="group_domain">Domain</option>
+              <option value="window" data-i18n="group_window">Window</option>
+              <option value="state" data-i18n="group_state">State</option>
+            </select>
+          </label>
+            <label><span data-i18n="group_sort">Group sort</span>
+            <select id="groupSortSelect">
+              <option value="name" data-i18n="group_sort_name">Name</option>
+              <option value="count-desc" data-i18n="group_sort_count_desc">Count ↓</option>
+              <option value="count-asc" data-i18n="group_sort_count_asc">Count ↑</option>
+              <option value="recent" data-i18n="group_sort_recent">Recent access</option>
+              <option value="old" data-i18n="group_sort_old">Old access</option>
+            </select>
+          </label>
+          </div>
+
+          <div class="option-row">
+            <label
+              class="check-chip"><input id="ignorePinnedToggle" type="checkbox"> <span data-i18n="ignore_pinned">Ignore pinned</span></label>
+            <span class="muted-inline"
+              data-i18n="ignore_pinned_desc">Pinned tabs are excluded from results and bulk actions.</span>
+          </div>
+
+          <div class="preset-section">
+            <div id="presetBar" class="preset-bar">
+              <button class="preset active" data-preset="all" data-i18n="preset_all">All</button>
+              <button class="preset" data-preset="linear">Linear</button>
+              <button class="preset" data-preset="github">GitHub</button>
+              <button class="preset" data-preset="duplicates"
+                data-i18n="preset_duplicates">Duplicates</button>
+              <button class="preset" data-preset="stale24"
+                data-i18n="preset_stale">Stale 24 h</button>
+              <button class="preset" data-preset="audible"
+                data-i18n="preset_audible">Audible</button>
+              <button class="preset" data-preset="discarded"
+                data-i18n="preset_discarded">Discarded</button>
+            </div>
+            <div class="preset-row">
+              <div id="customPresetBar" class="preset-bar"></div>
+              <button id="savePresetBtn" class="text-btn"
+                data-i18n="save_preset">Save preset</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="bulk-bar">
+          <div class="selection-summary">
+            <input id="selectAllCheckbox" type="checkbox">
+            <span id="selectionLabel">0 selected · 0 shown</span>
+          </div>
+          <div class="bulk-actions">
+            <button id="closeShownBtn" class="danger-btn" data-action="close-shown"
+              data-i18n-title="close_shown_desc" data-i18n="close_shown">Close shown</button>
+            <button class="danger-outline-btn" data-action="close"
+              data-i18n-title="close_selected_desc"
+              data-i18n="close_selected">Close selected</button>
+            <button class="action-btn" data-action="discard" data-i18n="discard">Discard</button>
+            <button class="action-btn" data-action="reload" data-i18n="reload">Reload</button>
+            <button class="action-btn" data-action="pin" data-i18n="pin">Pin</button>
+            <button class="action-btn" data-action="unpin" data-i18n="unpin">Unpin</button>
+            <button class="action-btn" data-action="mute" data-i18n="mute">Mute</button>
+            <button class="action-btn" data-action="unmute" data-i18n="unmute">Unmute</button>
+          </div>
+        </section>
+        <div class="bulk-help">
+          <span><b data-i18n="close_shown">Close shown</b>: <span data-i18n="close_shown_desc">Closes every tab currently visible after filtering, regardless of selection.</span></span>
+          <span><b data-i18n="close_selected">Close selected</b>: <span data-i18n="close_selected_desc">Closes only checked tabs.</span></span>
+        </div>
+
+        <div class="tab-list-head">
+          <div data-i18n="tab">Tab</div>
+          <div data-i18n="state">State</div>
+          <div data-i18n="accessed">Accessed</div>
+          <div></div>
+        </div>
+        <div id="tabList" class="tab-list"></div>
+
+        <footer class="status-bar">
+          <span id="statusText">Ready</span>
+          <span><code>$tabs</code> · <code>$selected</code> · <code>$_</code></span>
+        </footer>
+      </section>
+    </main>
+
+    <dialog id="helpDialog">
+      <div class="dialog-card">
+        <header><strong data-i18n="help_title">REPL helpers</strong><button class="ghost-btn" data-dialog-close>×</button></header>
+        <div class="help-grid">
+        <code>$tabs</code><span data-i18n="help_tabs">Current filtered result</span>
+        <code>$selected</code><span data-i18n="help_selected">Checked tabs</span>
+        <code>$_</code><span data-i18n="help_last">Previous REPL result</span>
+        <code>await ui.query({...})</code><span data-i18n="help_query">Apply/query the right-panel state</span>
+        <code>await close($tabs)</code><span data-i18n="help_close">Close current filtered tabs</span>
+        <code>console.table($tabs)</code><span data-i18n="help_table">Render a table in the console</span>
+        <code>browser.tabs.*</code><span data-i18n="help_raw">Raw Firefox WebExtension API</span>
+      </div>
+      </div>
+    </dialog>
+
+    <dialog id="settingsDialog">
+      <div class="dialog-card settings-card">
+        <header><strong data-i18n="settings">Settings</strong><button class="ghost-btn" data-dialog-close>×</button></header>
+        <label
+          class="settings-row"><span data-i18n="confirm_close">Confirm before closing tabs</span><input id="confirmCloseSetting" type="checkbox"></label>
+        <label
+          class="settings-row"><span data-i18n="hide_self">Hide Tab Console itself</span><input id="hideSelfSetting" type="checkbox"></label>
+        <label
+          class="settings-row"><span data-i18n="auto_refresh">Auto refresh on tab changes</span><input id="autoRefreshSetting" type="checkbox"></label>
+        <label
+          class="settings-row"><span data-i18n="theme">Theme</span><select id="themeSelect"><option value="light" data-i18n="theme_light">Light</option><option value="dark" data-i18n="theme_dark">Dark</option></select></label>
+        <div
+          class="settings-row settings-actions"><button id="resetSettingsBtn" class="danger-outline-btn" data-i18n="reset">Reset saved state</button><button class="primary-btn" data-dialog-close data-i18n="done">Done</button></div>
+      </div>
+    </dialog>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

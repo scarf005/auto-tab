@@ -1,0 +1,27 @@
+{
+  "tasks": {
+    "build": "deno run -A scripts/build.ts",
+    "check": "deno check src/app.ts scripts/build.ts",
+    "test": "deno test -A tests/filter_test.ts",
+    "package": "deno task build && deno run -A scripts/package.ts"
+  },
+  "imports": {
+    "codemirror": "npm:codemirror@5.65.16",
+    "@std/fs": "jsr:@std/fs@^1.0.19",
+    "@std/path": "jsr:@std/path@^1.1.2",
+    "fflate": "npm:fflate@0.8.2"
+  },
+  "compilerOptions": {
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "es2023"
+    ],
+    "strict": true
+  },
+  "fmt": {
+    "semiColons": false,
+    "singleQuote": false,
+    "lineWidth": 100
+  }
+}
