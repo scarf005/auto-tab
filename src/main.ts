@@ -1,9 +1,15 @@
 // Entry point: wires the REPL, the explorer, settings, and the REPL globals.
-import { readFilters, setPreset, writeFilters } from "./explorer/controls.ts"
-import { renderTabs } from "./explorer/render.ts"
+import {
+  CHECKBOX_IDS,
+  readFilters,
+  SELECT_IDS,
+  setPreset,
+  writeFilters,
+} from "./explorer/controls.ts"
+import { displayOrder, renderTabs, scrollFocusedIntoView } from "./explorer/render.ts"
 import { createRepl } from "./repl/editor.ts"
 import { clearConsole, print, printError, printTable, updateProblemCount } from "./repl/output.ts"
-import { storage } from "./storage.ts"
+import { type CustomPreset, storage } from "./storage.ts"
 import { $, selectedTabs, setStatus, state, t } from "./state.ts"
 import { type BulkAction, createTabActions, tabIds, type TabRefs } from "./tabs/actions.ts"
 import {
@@ -15,6 +21,7 @@ import {
   pruneSelection,
   type Tab,
 } from "./tabs/filters.ts"
+import { extendRange, moveFocus, selectRange } from "./tabs/selection.ts"
 
 const SEARCH_DEBOUNCE_MS = 180
 const TAB_EVENT_REFRESH_MS = 180
@@ -38,7 +45,7 @@ const actions = createTabActions(() => scheduleRefresh(ACTION_REFRESH_MS, true))
 function saveUiState() {
   storage.saveUi({
     consoleHidden: state.consoleHidden,
-    consoleWidth: state.consoleWidth,
+    consoleHeight: state.consoleHeight,
     ...readFilters(),
   })
 }
@@ -52,6 +59,10 @@ function applyFilters({ syncEditor = true } = {}) {
       hiddenUrl: state.settings.hideSelf ? browser.runtime.getURL("console.html") : null,
     })
     pruneSelection(state.selectedIds, state.filteredTabs)
+    // Keyboard actions must never reach a tab the filter hid.
+    const shown = new Set(state.filteredTabs.map((tab) => tab.id))
+    if (state.focusedId != null && !shown.has(state.focusedId)) state.focusedId = null
+    if (state.anchorId != null && !shown.has(state.anchorId)) state.anchorId = null
   } catch (err) {
     if (!(err instanceof SyntaxError)) throw err
     // A half-typed regex shows nothing but keeps the selection for when it becomes valid.
@@ -59,6 +70,7 @@ function applyFilters({ syncEditor = true } = {}) {
     state.filteredTabs = []
   }
   renderTabs()
+  markActiveView()
   saveUiState()
   if (syncEditor) repl.syncFromUi()
 }
@@ -211,6 +223,22 @@ function renderCustomPresets() {
       return button
     }),
   )
+  markActiveView()
+}
+
+/** Underlines the saved view whose filters match the current ones instead of the built-in tab. */
+function markActiveView() {
+  const current = readFilters()
+  const matches = (preset: CustomPreset) =>
+    (Object.keys(current) as (keyof FilterOptions)[]).every((key) =>
+      preset[key] === undefined || preset[key] === current[key]
+    )
+  const index = state.customPresets.findIndex(matches)
+  const custom = $("customPresetBar").children
+  for (let i = 0; i < custom.length; i++) custom[i].classList.toggle("active", i === index)
+  if (index >= 0) {
+    $("presetBar").querySelectorAll(".preset").forEach((btn) => btn.classList.remove("active"))
+  } else setPreset(state.activePreset)
 }
 
 function savePreset() {
@@ -240,17 +268,16 @@ function saveSettingsFromUi() {
   for (const [key, id] of Object.entries(SETTING_CHECKBOXES)) {
     state.settings[key as keyof typeof SETTING_CHECKBOXES] = $<HTMLInputElement>(id).checked
   }
-  state.settings.theme = $<HTMLSelectElement>("themeSelect").value === "dark" ? "dark" : "light"
+  const theme = $<HTMLSelectElement>("themeSelect").value
+  state.settings.theme = theme === "dark" || theme === "light" ? theme : "system"
   storage.saveSettings(state.settings)
   applyTheme()
   applyFilters()
 }
 
 function applyTheme() {
-  const dark = state.settings.theme === "dark"
-  document.documentElement.dataset.theme = dark ? "dark" : "light"
+  document.documentElement.dataset.theme = state.settings.theme
   $<HTMLSelectElement>("themeSelect").value = state.settings.theme
-  $("themeBtn").textContent = dark ? "☾" : "☀"
 }
 
 function applyI18n() {
@@ -262,6 +289,7 @@ function applyI18n() {
     )
   translateAttr("data-i18n", (el, text) => el.textContent = text)
   translateAttr("data-i18n-title", (el, text) => el.title = text)
+  translateAttr("data-i18n-aria-label", (el, text) => el.setAttribute("aria-label", text))
   translateAttr("data-i18n-placeholder", (el, text) => {
     ;(el as HTMLInputElement).placeholder = text
   })
@@ -271,17 +299,33 @@ function applyI18n() {
   renderCustomPresets()
 }
 
+const MIN_CONSOLE_HEIGHT = 140
+const MIN_LIST_HEIGHT = 120
+
+/** Console height that still leaves room for the list, whatever the window height. */
+function clampConsoleHeight(height: number) {
+  const app = $("app")
+  const listTop = $("tabList").getBoundingClientRect().top - app.getBoundingClientRect().top
+  const statusHeight = document.querySelector<HTMLElement>(".status-bar")?.offsetHeight ?? 0
+  const max = globalThis.innerHeight - listTop - MIN_LIST_HEIGHT - statusHeight - 5
+  return Math.round(Math.max(MIN_CONSOLE_HEIGHT, Math.min(max, height)))
+}
+
 function applyConsoleLayout() {
-  $("app").style.setProperty("--console-width", state.consoleWidth)
+  $("app").style.setProperty("--console-height", `${clampConsoleHeight(state.consoleHeight)}px`)
   $("app").classList.toggle("console-hidden", state.consoleHidden)
-  $("showConsoleBtn").classList.toggle("hidden", !state.consoleHidden)
+  $("showConsoleBtn").setAttribute("aria-pressed", String(!state.consoleHidden))
 }
 
 function setConsoleHidden(hidden: boolean) {
   state.consoleHidden = hidden
   applyConsoleLayout()
   saveUiState()
-  setTimeout(repl.refresh, 0)
+  setTimeout(() => {
+    repl.refresh()
+    if (hidden) $("tabList").focus()
+    else repl.focus()
+  }, 0)
 }
 
 function initSplitter() {
@@ -294,17 +338,177 @@ function initSplitter() {
   })
   globalThis.addEventListener("mousemove", (ev) => {
     if (!dragging) return
-    const min = 320, max = Math.max(min, globalThis.innerWidth - 430)
-    state.consoleWidth = `${Math.max(min, Math.min(max, ev.clientX))}px`
-    $("app").style.setProperty("--console-width", state.consoleWidth)
+    const statusHeight = document.querySelector<HTMLElement>(".status-bar")?.offsetHeight ?? 0
+    state.consoleHeight = clampConsoleHeight(globalThis.innerHeight - ev.clientY - statusHeight)
+    $("app").style.setProperty("--console-height", `${state.consoleHeight}px`)
     repl.refresh()
   })
+  // The saved height may not fit a smaller window; the saved value itself is kept.
+  globalThis.addEventListener("resize", applyConsoleLayout)
   globalThis.addEventListener("mouseup", () => {
     if (!dragging) return
     dragging = false
     splitter.classList.remove("dragging")
     saveUiState()
   })
+}
+
+// ── List selection and keyboard ─────────────────────────────────────────────
+
+function focusRow(id: number | null) {
+  state.focusedId = id
+  renderTabs()
+  scrollFocusedIntoView()
+}
+
+/** The focused tab if its row is on screen, otherwise null. */
+function shownFocusedId() {
+  const id = state.focusedId
+  return id != null && displayOrder().includes(id) ? id : null
+}
+
+/** Click focuses a row; the checkbox or Ctrl/Cmd toggles it; Shift selects a range from the anchor. */
+function clickRow(id: number, ev: MouseEvent, checkbox: HTMLInputElement | null) {
+  state.rangeBase = null
+  if (ev.shiftKey) {
+    const order = displayOrder()
+    // Without an anchor on screen the clicked row starts a new range.
+    if (state.anchorId == null || !order.includes(state.anchorId)) state.anchorId = id
+    selectRange(state.selectedIds, order, state.anchorId, id, checkbox?.checked ?? true)
+  } else {
+    if (checkbox || ev.metaKey || ev.ctrlKey) {
+      if (state.selectedIds.has(id)) state.selectedIds.delete(id)
+      else state.selectedIds.add(id)
+    }
+    state.anchorId = id
+  }
+  focusRow(id)
+}
+
+async function closeFocused() {
+  const id = shownFocusedId()
+  if (id == null) return
+  const order = displayOrder()
+  const next = order[order.indexOf(id) + 1] ?? order[order.indexOf(id) - 1] ?? null
+  await performRowAction("close", id)
+  // Keep the keyboard position on the neighbour once the tab is gone.
+  if (!state.allTabs.some((tab) => tab.id === id)) focusRow(next)
+}
+
+function activateFocused() {
+  const id = shownFocusedId()
+  if (id != null) reportErrors(actions.activate)(id)
+}
+
+function toggleFocused() {
+  const id = shownFocusedId()
+  if (id == null) return
+  if (state.selectedIds.has(id)) state.selectedIds.delete(id)
+  else state.selectedIds.add(id)
+  state.anchorId = id
+  state.rangeBase = null
+  renderTabs()
+}
+
+function moveRow(delta: number, extend: boolean) {
+  const order = displayOrder()
+  const current = shownFocusedId()
+  const next = moveFocus(order, current, delta)
+  if (next == null) return
+  if (extend) {
+    if (state.anchorId == null || !order.includes(state.anchorId)) state.anchorId = current ?? next
+    state.rangeBase ??= new Set(state.selectedIds)
+    state.selectedIds = extendRange(state.rangeBase, order, state.anchorId, next)
+  } else {
+    state.anchorId = next
+    state.rangeBase = null
+  }
+  focusRow(next)
+}
+
+/** Fields where keys belong to the element (typing, the editor, dialogs, console text). */
+function isTextTarget(el: HTMLElement | null) {
+  return !!el?.closest?.(
+    "input:not([type=checkbox]), textarea, select, .CodeMirror, dialog, #consoleOutput",
+  )
+}
+
+/** Controls whose Enter/Space must keep their own meaning (press a button, tick a box). */
+function isControlTarget(el: HTMLElement | null) {
+  return !!el?.closest?.("button, a, label, input[type=checkbox]")
+}
+
+function onKeyDown(ev: KeyboardEvent) {
+  if (ev.key === "`" && ev.ctrlKey) {
+    ev.preventDefault()
+    setConsoleHidden(!state.consoleHidden)
+    return
+  }
+  const search = $<HTMLInputElement>("searchInput")
+  if (ev.target === search) {
+    if (ev.key === "Escape") {
+      ev.preventDefault()
+      if (search.value) {
+        search.value = ""
+        applyFilters()
+      } else $("tabList").focus()
+    } else if (ev.key === "ArrowDown" || ev.key === "Enter") {
+      ev.preventDefault()
+      // Apply a search still waiting for its debounce, so focus lands on the real result.
+      if (searchTimer !== undefined) {
+        clearTimeout(searchTimer)
+        searchTimer = undefined
+        applyFilters()
+      }
+      $("tabList").focus()
+      if (shownFocusedId() == null) moveRow(1, false)
+    }
+    return
+  }
+  const target = ev.target as HTMLElement | null
+  if (isTextTarget(target) || ev.altKey) return
+  const mod = ev.metaKey || ev.ctrlKey
+  const key = ev.key
+  if (isControlTarget(target) && (key === "Enter" || key === " " || mod)) return
+  if (mod && key.toLowerCase() === "a") {
+    ev.preventDefault()
+    state.filteredTabs.forEach((tab) => state.selectedIds.add(tab.id!))
+    renderTabs()
+    return
+  }
+  if (mod) return
+  const handlers: Record<string, () => void> = {
+    "/": () => {
+      search.focus()
+      search.select()
+    },
+    "?": () => $<HTMLDialogElement>("helpDialog").showModal(),
+    j: () => moveRow(1, false),
+    J: () => moveRow(1, true),
+    ArrowDown: () => moveRow(1, ev.shiftKey),
+    k: () => moveRow(-1, false),
+    K: () => moveRow(-1, true),
+    ArrowUp: () => moveRow(-1, ev.shiftKey),
+    Home: () => moveRow(-Infinity, ev.shiftKey),
+    g: () => moveRow(-Infinity, false),
+    End: () => moveRow(Infinity, ev.shiftKey),
+    G: () => moveRow(Infinity, false),
+    x: toggleFocused,
+    " ": toggleFocused,
+    Enter: activateFocused,
+    o: activateFocused,
+    d: () => reportErrors(closeFocused)(),
+    Delete: () => handlers.d(),
+    Escape: () => {
+      if (!state.selectedIds.size) return
+      state.selectedIds.clear()
+      renderTabs()
+    },
+  }
+  const handler = handlers[key]
+  if (!handler) return
+  ev.preventDefault()
+  handler()
 }
 
 // ── Events ───────────────────────────────────────────────────────────────────
@@ -324,7 +528,7 @@ function bindEvents() {
   }
   $("refreshBtn").onclick = () => refreshTabs().catch(() => {})
   $("hideConsoleBtn").onclick = () => setConsoleHidden(true)
-  $("showConsoleBtn").onclick = () => setConsoleHidden(false)
+  $("showConsoleBtn").onclick = () => setConsoleHidden(!state.consoleHidden)
   $("savePresetBtn").onclick = savePreset
   $("syncQueryBtn").onclick = () => repl.syncFromUi(true)
   document.querySelectorAll<HTMLElement>("[data-dialog-close]").forEach((button) =>
@@ -332,8 +536,9 @@ function bindEvents() {
   )
 
   $("searchInput").addEventListener("input", scheduleSearch)
-  document.querySelectorAll(".filter-panel select, .filter-panel input[type=checkbox]")
-    .forEach((el) => el.addEventListener("change", () => applyFilters()))
+  for (const id of [...Object.values(SELECT_IDS), ...Object.values(CHECKBOX_IDS)]) {
+    $(id).addEventListener("change", () => applyFilters())
+  }
   $("presetBar").onclick = (ev) => {
     const button = (ev.target as HTMLElement).closest<HTMLElement>("[data-preset]")
     if (!button) return
@@ -350,38 +555,48 @@ function bindEvents() {
     renderTabs()
   }
   const tabList = $("tabList")
-  tabList.addEventListener("change", (ev) => {
-    const target = ev.target as HTMLInputElement
-    if (!target.classList.contains("row-checkbox")) return
-    const id = Number(target.dataset.tabId)
-    if (target.checked) state.selectedIds.add(id)
-    else state.selectedIds.delete(id)
-    renderTabs()
-  })
   tabList.addEventListener("click", (ev) => {
-    const button = (ev.target as HTMLElement).closest<HTMLElement>("[data-row-action]")
+    const target = ev.target as HTMLElement
+    const button = target.closest<HTMLElement>("[data-row-action]")
     if (button) {
       reportErrors(performRowAction)(button.dataset.rowAction!, Number(button.dataset.tabId))
+      return
+    }
+    const row = target.closest<HTMLElement>(".tab-row")
+    if (!row) return
+    const checkbox = target.closest<HTMLInputElement>(".row-checkbox")
+    // Clicks on the checkbox label reach here twice (label, then input); handle the input only.
+    if (!checkbox && target.closest(".row-check")) return
+    // Each click re-renders the rows, so the browser never fires dblclick; use the click count.
+    if (ev.detail === 2 && !checkbox && !ev.shiftKey && !ev.metaKey && !ev.ctrlKey) {
+      reportErrors(actions.activate)(Number(row.dataset.tabId))
+      return
+    }
+    clickRow(Number(row.dataset.tabId), ev, checkbox)
+  })
+  tabList.addEventListener("focus", () => {
+    // Show where the keyboard is as soon as the list gets focus (Tab key, click).
+    if (state.focusedId == null || !displayOrder().includes(state.focusedId)) {
+      focusRow(displayOrder()[0] ?? null)
     }
   })
-  tabList.addEventListener("dblclick", (ev) => {
-    const target = ev.target as HTMLElement
-    if (target.closest("input, button")) return
-    const row = target.closest<HTMLElement>(".tab-row")
-    if (row) reportErrors(actions.activate)(Number(row.dataset.tabId))
+  tabList.addEventListener("mousedown", (ev) => {
+    // Shift+click would otherwise select page text.
+    if (ev.shiftKey) ev.preventDefault()
   })
-  document.querySelector<HTMLElement>(".bulk-actions")!.onclick = (ev) => {
+  $("selectionBar").onclick = (ev) => {
     const action = (ev.target as HTMLElement).closest<HTMLElement>("[data-action]")?.dataset.action
-    if (action) reportErrors(performBulkAction)(action as BulkAction | "close-shown")
+    if (action) reportErrors(performBulkAction)(action as BulkAction)
   }
+  $("closeShownBtn").onclick = () => reportErrors(performBulkAction)("close-shown")
+  $("clearSelectionBtn").onclick = () => {
+    state.selectedIds.clear()
+    renderTabs()
+  }
+  document.addEventListener("keydown", onKeyDown)
 
   for (const id of [...Object.values(SETTING_CHECKBOXES), "themeSelect"]) {
     $(id).addEventListener("change", saveSettingsFromUi)
-  }
-  $("themeBtn").onclick = () => {
-    state.settings.theme = state.settings.theme === "dark" ? "light" : "dark"
-    storage.saveSettings(state.settings)
-    applyTheme()
   }
   $("languageSelect").onchange = () => {
     state.settings.language = $<HTMLSelectElement>("languageSelect").value === "ko" ? "ko" : "en"

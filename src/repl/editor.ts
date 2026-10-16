@@ -104,6 +104,10 @@ export function createRepl({ globals, uiQuerySource }: ReplOptions) {
     syncFromUi,
     updateLinkState,
     refresh: () => editor.refresh(),
+    focus() {
+      editor.focus()
+      editor.setCursor(editor.lineCount(), 0)
+    },
     value: () => editor.getValue(),
     lastResult: () => lastResult,
   }

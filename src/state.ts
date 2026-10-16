@@ -7,7 +7,7 @@ export const DEFAULT_SETTINGS: Settings = {
   confirmClose: true,
   hideSelf: true,
   autoRefresh: true,
-  theme: "light",
+  theme: "system",
   language: detectLanguage(),
 }
 
@@ -21,8 +21,15 @@ export const state = {
   activePreset: "all",
   customPresets: storage.presets(),
   settings: storage.settings(DEFAULT_SETTINGS),
-  consoleHidden: !!savedUi.consoleHidden,
-  consoleWidth: savedUi.consoleWidth || "48vw",
+  // The list is the main view; the console opens on demand (Ctrl+`).
+  consoleHidden: savedUi.consoleHidden ?? true,
+  consoleHeight: savedUi.consoleHeight || 300,
+  /** Row the keyboard acts on. */
+  focusedId: null as number | null,
+  /** Where the next Shift+click or Shift+j/k range starts. */
+  anchorId: null as number | null,
+  /** Selection before the current Shift+j/k range began; null when no range is being extended. */
+  rangeBase: null as Set<number> | null,
 }
 
 export const t = (key: TranslationKey, vars?: Record<string, string | number>) =>

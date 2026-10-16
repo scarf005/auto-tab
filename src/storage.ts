@@ -13,7 +13,7 @@ export interface Settings {
   confirmClose: boolean
   hideSelf: boolean
   autoRefresh: boolean
-  theme: "light" | "dark"
+  theme: "system" | "light" | "dark"
   language: Language
 }
 
@@ -21,7 +21,8 @@ export type CustomPreset = { name: string } & Partial<FilterOptions>
 
 export type SavedUi = Partial<FilterOptions> & {
   consoleHidden?: boolean
-  consoleWidth?: string
+  /** Console drawer height in px. */
+  consoleHeight?: number
 }
 
 function read<T>(key: string, fallback: T): T {

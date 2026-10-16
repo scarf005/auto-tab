@@ -275,8 +275,10 @@ export interface TabGroup {
   tabs: Tab[]
 }
 
+export const NO_DOMAIN = "(no domain)"
+
 function groupKey(tab: Tab, by: GroupBy): string {
-  if (by === "domain") return hostname(tab) || "(no domain)"
+  if (by === "domain") return hostname(tab) || NO_DOMAIN
   if (by === "window") return String(tab.windowId)
   if (by === "state") return primaryState(tab)
   return ""
