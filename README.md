@@ -27,7 +27,7 @@ deno task test
 deno task package
 ```
 
-빌드 결과는 `dist/`, 패키징 결과는 `tab-console-firefox-mv2-0.2.0.xpi`입니다.
+빌드 결과는 `dist/`, 패키징 결과는 `tab-console-firefox-mv2-0.3.0.xpi`입니다.
 
 ## UI ↔ REPL 동기화
 
