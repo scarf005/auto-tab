@@ -1,22 +1,26 @@
 {
   "tasks": {
     "build": "deno run -A scripts/build.ts",
-    "check": "deno check src/app.ts scripts/build.ts",
-    "test": "deno test -A tests/filter_test.ts",
+    "check": "deno check src/ scripts/ tests/",
+    "test": "deno test -A tests/",
     "package": "deno task build && deno run -A scripts/package.ts"
   },
   "imports": {
     "codemirror": "npm:codemirror@5.65.16",
+    "@types/codemirror": "npm:@types/codemirror@5.60.15",
+    "@std/assert": "jsr:@std/assert@^1.0.14",
     "@std/fs": "jsr:@std/fs@^1.0.19",
     "@std/path": "jsr:@std/path@^1.1.2",
     "fflate": "npm:fflate@0.8.2"
   },
   "compilerOptions": {
     "lib": [
+      "deno.ns",
       "dom",
       "dom.iterable",
-      "es2023"
+      "esnext"
     ],
+    "types": ["npm:@types/firefox-webext-browser@120.0.4"],
     "strict": true
   },
   "fmt": {

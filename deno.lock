@@ -1,14 +1,23 @@
 {
   "version": "5",
   "specifiers": {
+    "jsr:@std/assert@^1.0.14": "1.0.17",
     "jsr:@std/fs@^1.0.19": "1.0.23",
     "jsr:@std/internal@^1.0.12": "1.0.12",
     "jsr:@std/path@^1.1.2": "1.1.4",
     "jsr:@std/path@^1.1.4": "1.1.4",
+    "npm:@types/codemirror@5.60.15": "5.60.15",
+    "npm:@types/firefox-webext-browser@120.0.4": "120.0.4",
     "npm:codemirror@5.65.16": "5.65.16",
     "npm:fflate@0.8.2": "0.8.2"
   },
   "jsr": {
+    "@std/assert@1.0.17": {
+      "integrity": "df5ebfffe77c03b3fa1401e11c762cc8f603d51021c56c4d15a8c7ab45e90dbe",
+      "dependencies": [
+        "jsr:@std/internal"
+      ]
+    },
     "@std/fs@1.0.23": {
       "integrity": "3ecbae4ce4fee03b180fa710caff36bb5adb66631c46a6460aaad49515565a37",
       "dependencies": [
@@ -27,6 +36,24 @@
     }
   },
   "npm": {
+    "@types/codemirror@5.60.15": {
+      "integrity": "sha512-dTOvwEQ+ouKJ/rE9LT1Ue2hmP6H1mZv5+CCnNWu2qtiOe2LQa9lCprEY20HxiDmV/Bxh+dXjywmy5aKvoGjULA==",
+      "dependencies": [
+        "@types/tern"
+      ]
+    },
+    "@types/estree@1.0.8": {
+      "integrity": "sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w=="
+    },
+    "@types/firefox-webext-browser@120.0.4": {
+      "integrity": "sha512-lBrpf08xhiZBigrtdQfUaqX1UauwZ+skbFiL8u2Tdra/rklkKadYmIzTwkNZSWtuZ7OKpFqbE2HHfDoFqvZf6w=="
+    },
+    "@types/tern@0.23.9": {
+      "integrity": "sha512-ypzHFE/wBzh+BlH6rrBgS5I/Z7RD21pGhZ2rltb/+ZrVM1awdZwjx7hE5XfuYgHWk9uvV5HLZN3SloevCAp3Bw==",
+      "dependencies": [
+        "@types/estree"
+      ]
+    },
     "codemirror@5.65.16": {
       "integrity": "sha512-br21LjYmSlVL0vFCPWPfhzUCT34FM/pAdK7rRIZwa0rrtrIdotvP4Oh4GUHsu2E3IrQMCfRkL/fN3ytMNxVQvg=="
     },
@@ -36,8 +63,11 @@
   },
   "workspace": {
     "dependencies": [
+      "jsr:@std/assert@^1.0.14",
       "jsr:@std/fs@^1.0.19",
       "jsr:@std/path@^1.1.2",
+      "npm:@types/codemirror@5.60.15",
+      "npm:@types/firefox-webext-browser@120.0.4",
       "npm:codemirror@5.65.16",
       "npm:fflate@0.8.2"
     ]

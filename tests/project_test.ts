@@ -1,4 +1,4 @@
-import { assert, assertEquals } from "jsr:@std/assert@^1.0.14"
+import { assert, assertEquals } from "@std/assert"
 
 Deno.test("repo has no vendor directory", async () => {
   let exists = true
