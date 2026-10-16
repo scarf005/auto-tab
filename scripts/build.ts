@@ -1,13 +1,13 @@
 import { copy, emptyDir } from "@std/fs"
-import { join } from "@std/path"
+import { fromFileUrl, join } from "@std/path"
 
-const root = new URL("..", import.meta.url).pathname
+const root = fromFileUrl(new URL("..", import.meta.url))
 const dist = join(root, "dist")
 await emptyDir(dist)
 
 const status = await new Deno.Command(Deno.execPath(), {
   cwd: root,
-  args: ["bundle", "--platform=browser", "-o", "dist/app.js", "src/app.ts"],
+  args: ["bundle", "--platform=browser", "-o", "dist/app.js", "src/main.ts"],
   stdout: "inherit",
   stderr: "inherit",
 }).spawn().status
