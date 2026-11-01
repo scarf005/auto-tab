@@ -13004,6 +13004,8 @@ var translations = {
     close_shown_confirm: "\uBAA9\uB85D\uC758 \uD0ED {count}\uAC1C\uB97C \uBAA8\uB450 \uB2EB\uC744\uAE4C\uC694?",
     close_selected_confirm: "\uC120\uD0DD\uD55C \uD0ED {count}\uAC1C\uB97C \uB2EB\uC744\uAE4C\uC694?",
     close_one_confirm: "\u2018{title}\u2019 \uD0ED\uC744 \uB2EB\uC744\uAE4C\uC694?",
+    close_group: "\uC774 \uBB36\uC74C\uC758 \uD0ED \uBAA8\uB450 \uB2EB\uAE30",
+    close_group_confirm: "\uBB36\uC74C\uC758 \uD0ED {count}\uAC1C\uB97C \uBAA8\uB450 \uB2EB\uC744\uAE4C\uC694?",
     reset_confirm: "\uD544\uD130, \uC800\uC7A5\uD55C \uBCF4\uAE30, \uC124\uC815, \uCF58\uC194 \uAE30\uB85D\uC744 \uCD08\uAE30\uD654\uD560\uAE4C\uC694?",
     ready_console: "\uD0ED {count}\uAC1C. $tabs, $selected, $_, browser.* \uB97C \uC4F8 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
     errors: "\uC624\uB958 {count}\uAC1C",
@@ -13162,6 +13164,8 @@ var translations = {
     close_shown_confirm: "Close all {count} tabs in the list?",
     close_selected_confirm: "Close {count} selected tabs?",
     close_one_confirm: "Close \u2018{title}\u2019?",
+    close_group: "Close all tabs in this group",
+    close_group_confirm: "Close all {count} tabs in this group?",
     reset_confirm: "Reset filters, saved views, settings and console history?",
     ready_console: "{count} tabs. Use $tabs, $selected, $_ or browser.*",
     errors: "{count} errors",
@@ -13670,6 +13674,16 @@ function rowButton(action, tabId, iconName, title) {
   button.append(icon(iconName));
   return button;
 }
+function groupCloseButton() {
+  const button = el("button", {
+    className: "row-icon-btn close group-close",
+    title: t("close_group")
+  });
+  button.type = "button";
+  button.dataset.groupAction = "close";
+  button.append(icon("close"));
+  return button;
+}
 function tabRow(tab) {
   const id = tab.id;
   const selected = state.selectedIds.has(id);
@@ -13775,7 +13789,8 @@ function renderList(groupBy, groupSort) {
         textContent: t("group_count", {
           count: group.tabs.length
         })
-      })
+      }),
+      groupCloseButton()
     ]),
     ...group.tabs.map(tabRow)
   ])));
@@ -14445,6 +14460,15 @@ async function closeShown() {
   state.selectedIds.clear();
   await refreshTabs();
 }
+async function closeGroup(ids) {
+  const tabs = state.allTabs.filter((tab) => ids.includes(tab.id));
+  if (!tabs.length || !confirmClose(t("close_group_confirm", {
+    count: tabs.length
+  }))) return;
+  await actions.close(tabs);
+  for (const id of ids) state.selectedIds.delete(id);
+  await refreshTabs();
+}
 async function performBulkAction(action) {
   if (action === "close-shown") return closeShown();
   const selected = selectedTabs();
@@ -14784,6 +14808,13 @@ function bindEvents() {
   const tabList = $("tabList");
   tabList.addEventListener("click", (ev) => {
     const target = ev.target;
+    if (target.closest("[data-group-action]")) {
+      const rows = target.closest(".group-block").querySelectorAll(".tab-row");
+      reportErrors(closeGroup)([
+        ...rows
+      ].map((row2) => Number(row2.dataset.tabId)));
+      return;
+    }
     const button = target.closest("[data-row-action]");
     if (button) {
       reportErrors(performRowAction)(button.dataset.rowAction, Number(button.dataset.tabId));

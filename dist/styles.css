@@ -67,10 +67,10 @@
     --focus-ring: #7aa7ff;
     --danger: #ff8a7d;
     --danger-bg: #3a2220;
-  --warn: #f0c56c;
-  --on-accent: #0d1a33;
-  --bar-bg: #34343a;
-  --bar-fg: #ececea;
+    --warn: #f0c56c;
+    --on-accent: #0d1a33;
+    --bar-bg: #34343a;
+    --bar-fg: #ececea;
     --code: #1c1c1e;
     --shadow: 0 10px 32px rgba(0, 0, 0, .5);
   }
@@ -609,6 +609,12 @@ kbd {
 .group-meta {
   color: var(--text-3);
   font-weight: 400;
+}
+.group-close {
+  align-self: center;
+  width: 20px;
+  height: 20px;
+  margin-left: auto;
 }
 .empty-state {
   padding: 64px 20px;
