@@ -24,9 +24,9 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 
-// ../../../Library/Caches/deno/npm/registry.npmjs.org/codemirror/5.65.16/lib/codemirror.js
+// ../../../.cache/deno/npm/registry.npmjs.org/codemirror/5.65.16/lib/codemirror.js
 var require_codemirror = __commonJS({
-  "../../../Library/Caches/deno/npm/registry.npmjs.org/codemirror/5.65.16/lib/codemirror.js"(exports, module) {
+  "../../../.cache/deno/npm/registry.npmjs.org/codemirror/5.65.16/lib/codemirror.js"(exports, module) {
     (function(global, factory) {
       typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory() : typeof define === "function" && define.amd ? define(factory) : (global = global || self, global.CodeMirror = factory());
     })(exports, function() {
@@ -11021,9 +11021,9 @@ var require_codemirror = __commonJS({
   }
 });
 
-// ../../../Library/Caches/deno/npm/registry.npmjs.org/codemirror/5.65.16/mode/javascript/javascript.js
+// ../../../.cache/deno/npm/registry.npmjs.org/codemirror/5.65.16/mode/javascript/javascript.js
 var require_javascript = __commonJS({
-  "../../../Library/Caches/deno/npm/registry.npmjs.org/codemirror/5.65.16/mode/javascript/javascript.js"(exports, module) {
+  "../../../.cache/deno/npm/registry.npmjs.org/codemirror/5.65.16/mode/javascript/javascript.js"(exports, module) {
     (function(mod) {
       if (typeof exports == "object" && typeof module == "object") mod(require_codemirror());
       else if (typeof define == "function" && define.amd) define([
@@ -12046,9 +12046,9 @@ var require_javascript = __commonJS({
   }
 });
 
-// ../../../Library/Caches/deno/npm/registry.npmjs.org/codemirror/5.65.16/addon/edit/closebrackets.js
+// ../../../.cache/deno/npm/registry.npmjs.org/codemirror/5.65.16/addon/edit/closebrackets.js
 var require_closebrackets = __commonJS({
-  "../../../Library/Caches/deno/npm/registry.npmjs.org/codemirror/5.65.16/addon/edit/closebrackets.js"(exports, module) {
+  "../../../.cache/deno/npm/registry.npmjs.org/codemirror/5.65.16/addon/edit/closebrackets.js"(exports, module) {
     (function(mod) {
       if (typeof exports == "object" && typeof module == "object") mod(require_codemirror());
       else if (typeof define == "function" && define.amd) define([
@@ -12235,9 +12235,9 @@ var require_closebrackets = __commonJS({
   }
 });
 
-// ../../../Library/Caches/deno/npm/registry.npmjs.org/codemirror/5.65.16/addon/edit/matchbrackets.js
+// ../../../.cache/deno/npm/registry.npmjs.org/codemirror/5.65.16/addon/edit/matchbrackets.js
 var require_matchbrackets = __commonJS({
-  "../../../Library/Caches/deno/npm/registry.npmjs.org/codemirror/5.65.16/addon/edit/matchbrackets.js"(exports, module) {
+  "../../../.cache/deno/npm/registry.npmjs.org/codemirror/5.65.16/addon/edit/matchbrackets.js"(exports, module) {
     (function(mod) {
       if (typeof exports == "object" && typeof module == "object") mod(require_codemirror());
       else if (typeof define == "function" && define.amd) define([
@@ -12384,9 +12384,9 @@ var require_matchbrackets = __commonJS({
   }
 });
 
-// ../../../Library/Caches/deno/npm/registry.npmjs.org/codemirror/5.65.16/addon/hint/show-hint.js
+// ../../../.cache/deno/npm/registry.npmjs.org/codemirror/5.65.16/addon/hint/show-hint.js
 var require_show_hint = __commonJS({
-  "../../../Library/Caches/deno/npm/registry.npmjs.org/codemirror/5.65.16/addon/hint/show-hint.js"(exports, module) {
+  "../../../.cache/deno/npm/registry.npmjs.org/codemirror/5.65.16/addon/hint/show-hint.js"(exports, module) {
     (function(mod) {
       if (typeof exports == "object" && typeof module == "object") mod(require_codemirror());
       else if (typeof define == "function" && define.amd) define([
