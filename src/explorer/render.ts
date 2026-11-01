@@ -112,6 +112,17 @@ function rowButton(action: string, tabId: number, iconName: keyof typeof ICONS, 
   return button
 }
 
+function groupCloseButton() {
+  const button = el("button", {
+    className: "row-icon-btn close group-close",
+    title: t("close_group"),
+  })
+  button.type = "button"
+  button.dataset.groupAction = "close"
+  button.append(icon("close"))
+  return button
+}
+
 function tabRow(tab: Tab) {
   const id = tab.id!
   const selected = state.selectedIds.has(id)
@@ -183,6 +194,7 @@ function renderList(groupBy: GroupBy, groupSort: ReturnType<typeof readFilters>[
             className: "group-meta",
             textContent: t("group_count", { count: group.tabs.length }),
           }),
+          groupCloseButton(),
         ]),
         ...group.tabs.map(tabRow),
       ])

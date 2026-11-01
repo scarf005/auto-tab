@@ -173,6 +173,14 @@ async function closeShown() {
   await refreshTabs()
 }
 
+async function closeGroup(ids: number[]) {
+  const tabs = state.allTabs.filter((tab) => ids.includes(tab.id!))
+  if (!tabs.length || !confirmClose(t("close_group_confirm", { count: tabs.length }))) return
+  await actions.close(tabs)
+  for (const id of ids) state.selectedIds.delete(id)
+  await refreshTabs()
+}
+
 async function performBulkAction(action: BulkAction | "close-shown") {
   if (action === "close-shown") return closeShown()
   const selected = selectedTabs()
@@ -557,6 +565,11 @@ function bindEvents() {
   const tabList = $("tabList")
   tabList.addEventListener("click", (ev) => {
     const target = ev.target as HTMLElement
+    if (target.closest("[data-group-action]")) {
+      const rows = target.closest(".group-block")!.querySelectorAll<HTMLElement>(".tab-row")
+      reportErrors(closeGroup)([...rows].map((row) => Number(row.dataset.tabId)))
+      return
+    }
     const button = target.closest<HTMLElement>("[data-row-action]")
     if (button) {
       reportErrors(performRowAction)(button.dataset.rowAction!, Number(button.dataset.tabId))
